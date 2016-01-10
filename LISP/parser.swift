@@ -8,14 +8,11 @@ struct Position : CustomStringConvertible {
 
 extension Position : ArrayLiteralConvertible {
     init(arrayLiteral elements: Int...) {
-        var i = 0
-        for el in elements {
-            switch i {
-            case 0: line = el
-            case 1: column = el
-            default: fatalError("too many values to initialize Position")
-            }
-            i += 1
+        if elements.count == 2 {
+            line = elements[0]
+            column = elements[1]
+        } else {
+            fatalError("too " + (elements.count > 2 ? "many" : "few") + " values to initialize Position")
         }
     }
 }
