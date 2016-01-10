@@ -1,11 +1,8 @@
 import Foundation
 
-public struct State : CustomStringConvertible {
-    private var env = Dictionary<String, Int>()
-    public var description: String {
-        return "State(\(env))"
-    }
-    
+public struct State {
+    var env = Dictionary<String, Int>()
+
     init(_ d: Dictionary<String, Int> = [:]) {
         env = d
     }
@@ -21,7 +18,7 @@ public protocol Evaluable {
     func eval(s: State) -> ReturnType
 }
 
-public indirect enum Expr : Evaluable, CustomStringConvertible {
+public indirect enum Expr : Evaluable {
     case Const(x: Int)
     case Var(n: String)
     case Add(a: Expr, b: Expr)
@@ -35,18 +32,9 @@ public indirect enum Expr : Evaluable, CustomStringConvertible {
         case .Sub(let a, let b): return a.eval(s) - b.eval(s)
         }
     }
-    
-    public var description: String {
-        switch(self) {
-        case let .Const(x): return "\(x)"
-        case let .Var(x): return "?\(x)"
-        case let .Add(a, b): return "(+ \(a) \(b))"
-        case let .Sub(a, b): return "(- \(a) \(b))"
-        }
-    }
 }
 
-public indirect enum BoolExpr : Evaluable, CustomStringConvertible {
+public indirect enum BoolExpr : Evaluable {
     case LessThan(a: Expr, b: Expr)
     case Equal(a: Expr, b: Expr)
     case GreaterThan(a: Expr, b: Expr)
@@ -64,17 +52,6 @@ public indirect enum BoolExpr : Evaluable, CustomStringConvertible {
         case .Not(let e): return !e.eval(s)
         }
     }
-    
-    public var description: String {
-        switch(self) {
-        case let .LessThan(a, b): return "(< \(a) \(b))"
-        case let .Equal(a, b): return "(= \(a) \(b))"
-        case let .GreaterThan(a, b): return "(> \(a) \(b))"
-        case let .And(a, b): return "(and \(a) \(b))"
-        case let .Or(a, b): return "(or \(a) \(b))"
-        case let .Not(e): return "(not \(e))"
-        }
-    }
 }
 
 public protocol Program {
@@ -82,13 +59,12 @@ public protocol Program {
     func final(s: State) -> Bool
 }
 
-public struct Empty : Program, CustomStringConvertible {
+public struct Empty : Program {
     public func trans(s: State) -> (Program, State)? {return nil}
     public func final(s: State) -> Bool {return true}
-    public var description: String {return "()"}
 }
 
-public struct Sequence : Program, CustomStringConvertible {
+public struct Sequence : Program {
     let p1, p2: Program
     
     public func trans(s: State) -> (Program, State)? {
@@ -100,11 +76,9 @@ public struct Sequence : Program, CustomStringConvertible {
     public func final(s: State) -> Bool {
         return p1.final(s) && p2.final(s)
     }
-    
-    public var description: String {return "(\(p1) \(p2))"}
 }
 
-public struct Assign : Program, CustomStringConvertible {
+public struct Assign : Program {
     let name: String
     let value: Expr
     
@@ -117,11 +91,9 @@ public struct Assign : Program, CustomStringConvertible {
     public func final(s: State) -> Bool {
         return false
     }
-    
-    public var description: String {return "(set \(name) \(value))"}
 }
 
-public struct If : Program, CustomStringConvertible {
+public struct If : Program {
     let cond: BoolExpr
     let body: Program
     
@@ -136,11 +108,9 @@ public struct If : Program, CustomStringConvertible {
     public func final(s: State) -> Bool {
         return !cond.eval(s) || body.final(s)
     }
-    
-    public var description: String {return "(if \(cond) \(body))"}
 }
 
-public struct While : Program, CustomStringConvertible {
+public struct While : Program {
     let cond: BoolExpr
     let body: Program
     
@@ -155,8 +125,6 @@ public struct While : Program, CustomStringConvertible {
     public func final(s: State) -> Bool {
         return !cond.eval(s) || body.final(s)
     }
-    
-    public var description: String {return "(while \(cond) \(body))"}
 }
 
 public extension Program {

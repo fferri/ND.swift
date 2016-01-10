@@ -65,17 +65,10 @@ func tokenize(s: String) -> [Token] {
 }
 
 /// A node is either: a compound, a number or a symbol
-enum Node : CustomStringConvertible {
+enum Node {
     case Comp(args: [Node], position: Position)
     case Symbol(name: String, position: Position)
     case Number(value: Int, position: Position)
-    var description: String {
-        switch(self) {
-        case Comp(let a): return "\(a)"
-        case Symbol(let a): return "\"\(a)\""
-        case Number(let a): return "\(a)"
-        }
-    }
 }
 
 /// Construct an atom (number or symbol) from a string
