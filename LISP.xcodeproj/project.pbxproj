@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7A1EDF751C42BCEE004506E2 /* string_conversions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1EDF741C42BCEE004506E2 /* string_conversions.swift */; };
 		7A3D04D31C418A0D00C56AE5 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A3D04D21C418A0D00C56AE5 /* main.swift */; };
 		7A3D04DA1C41D7E200C56AE5 /* parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A3D04D91C41D7E200C56AE5 /* parser.swift */; };
 		7A3D04DE1C41D83F00C56AE5 /* interpreter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A3D04DD1C41D83F00C56AE5 /* interpreter.swift */; };
@@ -26,6 +27,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		7A1EDF741C42BCEE004506E2 /* string_conversions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = string_conversions.swift; sourceTree = "<group>"; };
 		7A3D04CF1C418A0D00C56AE5 /* LISP */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = LISP; sourceTree = BUILT_PRODUCTS_DIR; };
 		7A3D04D21C418A0D00C56AE5 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		7A3D04D91C41D7E200C56AE5 /* parser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = parser.swift; sourceTree = "<group>"; };
@@ -65,6 +67,7 @@
 			children = (
 				7A3D04D21C418A0D00C56AE5 /* main.swift */,
 				7A3D04D91C41D7E200C56AE5 /* parser.swift */,
+				7A1EDF741C42BCEE004506E2 /* string_conversions.swift */,
 				7A3D04DD1C41D83F00C56AE5 /* interpreter.swift */,
 				7A3D04DF1C42A0EB00C56AE5 /* tests.swift */,
 			);
@@ -131,6 +134,7 @@
 				7A3D04DE1C41D83F00C56AE5 /* interpreter.swift in Sources */,
 				7A3D04E01C42A0EB00C56AE5 /* tests.swift in Sources */,
 				7A3D04DA1C41D7E200C56AE5 /* parser.swift in Sources */,
+				7A1EDF751C42BCEE004506E2 /* string_conversions.swift in Sources */,
 				7A3D04D31C418A0D00C56AE5 /* main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -251,6 +255,7 @@
 				7A3D04D81C418A0D00C56AE5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
