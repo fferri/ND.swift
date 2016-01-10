@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		7A3D04D31C418A0D00C56AE5 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A3D04D21C418A0D00C56AE5 /* main.swift */; };
+		7A3D04DA1C41D7E200C56AE5 /* parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A3D04D91C41D7E200C56AE5 /* parser.swift */; };
+		7A3D04DE1C41D83F00C56AE5 /* interpreter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A3D04DD1C41D83F00C56AE5 /* interpreter.swift */; };
+		7A3D04E01C42A0EB00C56AE5 /* tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A3D04DF1C42A0EB00C56AE5 /* tests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +28,9 @@
 /* Begin PBXFileReference section */
 		7A3D04CF1C418A0D00C56AE5 /* LISP */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = LISP; sourceTree = BUILT_PRODUCTS_DIR; };
 		7A3D04D21C418A0D00C56AE5 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		7A3D04D91C41D7E200C56AE5 /* parser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = parser.swift; sourceTree = "<group>"; };
+		7A3D04DD1C41D83F00C56AE5 /* interpreter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = interpreter.swift; sourceTree = "<group>"; };
+		7A3D04DF1C42A0EB00C56AE5 /* tests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = tests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +64,9 @@
 			isa = PBXGroup;
 			children = (
 				7A3D04D21C418A0D00C56AE5 /* main.swift */,
+				7A3D04D91C41D7E200C56AE5 /* parser.swift */,
+				7A3D04DD1C41D83F00C56AE5 /* interpreter.swift */,
+				7A3D04DF1C42A0EB00C56AE5 /* tests.swift */,
 			);
 			path = LISP;
 			sourceTree = "<group>";
@@ -119,6 +128,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7A3D04DE1C41D83F00C56AE5 /* interpreter.swift in Sources */,
+				7A3D04E01C42A0EB00C56AE5 /* tests.swift in Sources */,
+				7A3D04DA1C41D7E200C56AE5 /* parser.swift in Sources */,
 				7A3D04D31C418A0D00C56AE5 /* main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
