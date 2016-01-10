@@ -23,6 +23,8 @@ extension Expr : CustomStringConvertible {
         case let .Var(x): return "?\(x)"
         case let .Add(a, b): return "(+ \(a) \(b))"
         case let .Sub(a, b): return "(- \(a) \(b))"
+        case let .Mul(a, b): return "(* \(a) \(b))"
+        case let .Div(a, b): return "(/ \(a) \(b))"
         }
     }
 }

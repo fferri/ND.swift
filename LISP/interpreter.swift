@@ -23,6 +23,8 @@ public indirect enum Expr : Evaluable {
     case Var(n: String)
     case Add(a: Expr, b: Expr)
     case Sub(a: Expr, b: Expr)
+    case Mul(a: Expr, b: Expr)
+    case Div(a: Expr, b: Expr)
     
     public func eval(s: State) -> Int {
         switch(self) {
@@ -30,6 +32,8 @@ public indirect enum Expr : Evaluable {
         case .Var(let n): if let v = s[n] {return v} else {fatalError("no such variable \(n)")}
         case .Add(let a, let b): return a.eval(s) + b.eval(s)
         case .Sub(let a, let b): return a.eval(s) - b.eval(s)
+        case .Mul(let a, let b): return a.eval(s) * b.eval(s)
+        case .Div(let a, let b): return a.eval(s) / b.eval(s)
         }
     }
 }

@@ -135,7 +135,7 @@ func translateExpr(n: Node) -> Expr? {
     case let .Comp(args, pos):
         let c = args.count
         if c > 0 {
-            let ops = ["+", "-"]
+            let ops = ["+", "-", "*", "/"]
             switch args[0] {
             case let .Symbol(op, _):
                 if !ops.contains(op) {return nil}
@@ -148,6 +148,8 @@ func translateExpr(n: Node) -> Expr? {
                     switch op {
                     case "+": e1 = Expr.Add(a: e1, b: e2)
                     case "-": e1 = Expr.Sub(a: e1, b: e2)
+                    case "*": e1 = Expr.Mul(a: e1, b: e2)
+                    case "/": e1 = Expr.Div(a: e1, b: e2)
                     default: return nil
                     }
                 }

@@ -27,6 +27,8 @@ func runTests() {
     runTest("(set x 1)"){$0["x"] == 1}
     runTest("((set x 5) (set y 4) (set z 0)" +
         "(while (> y 0) ((set z (+ x z)) (set y (- y 1)))))"){$0["z"] == 20}
+    runTest("(set z (* 5 4))"){$0["z"] == 20}
+    runTest("(set z (/ 20 2 2))"){$0["z"] == 5}
     runTest("(set x (+ 1 1 1 1 (- 10 5 3 2)))"){$0["x"] == 4}
     runTest(State(["x": 5]), "(if (> x 4) (set x 1))"){$0["x"] == 1}
     runTest(State(["x": 3]), "(if (> x 4) (set x 1))"){$0["x"] == 3}
