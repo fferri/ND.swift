@@ -1,32 +1,69 @@
 import Foundation
 
-/// Tokenize, i.e. convert a string into an array of strings (tokens)
-func tokenize(s: String) -> [String] {
-    var tokens = [String]()
-    var token = "" as String
-    var str = false
-    var esc = false
+struct Position : CustomStringConvertible {
+    var line = 1
+    var column = 0
+    var description: String {return "line \(line) column \(column)"}
+}
+
+extension Position : ArrayLiteralConvertible {
+    init(arrayLiteral elements: Int...) {
+        var i = 0
+        for el in elements {
+            switch i {
+            case 0: line = el
+            case 1: column = el
+            default: fatalError("too many values to initialize Position")
+            }
+            i += 1
+        }
+    }
+}
+
+extension Position : Equatable {}
+
+func ==(lhs: Position, rhs: Position) -> Bool {
+    return lhs.line == rhs.line && lhs.column == rhs.column
+}
+
+struct Token : CustomStringConvertible {
+    var value = ""
+    var position = Position()
+    var length: Int {return value.characters.count}
+    var description: String {return "\"\(value)\" at \(position)"}
+}
+
+/// Tokenize, i.e. convert a string into an array of tokens
+func tokenize(s: String) -> [Token] {
+    var tokens = [Token]()
+    var token = Token()
+    var pos = Position()
+    var (str, esc) = (false, false)
     for c in s.characters {
+        pos.column += 1
+        if c == "\n" {pos = Position(line: pos.line + 1, column: 0)}
         if esc {
-            token.append(c)
+            token.value.append(c)
             esc = false
         } else if !str && (c == " " || c == "\n" || c == "\t" || c == "(" || c == ")") {
-            if token.characters.count > 0 {
+            if token.length > 0 {
                 tokens.append(token)
-                token = ""
+                token = Token()
             }
+            token.position = pos
+            token.position.column += 1
             if c == "(" || c == ")" {
-                tokens.append(String(c))
+                tokens.append(Token(value: String(c), position: pos))
             }
         } else if str && c == "\\" {
             esc = true
         } else if c == "\"" {
             str = !str
         } else {
-            token.append(c)
+            token.value.append(c)
         }
     }
-    if token.characters.count > 0 {tokens.append(token)}
+    if token.length > 0 {tokens.append(token)}
     return tokens
 }
 
@@ -50,8 +87,8 @@ func makeAtom(s: String?) -> Node? {
     if let i = Int(s!) {return .Number(value: i)} else {return .Symbol(name: s!)}
 }
 
-/// Read noded from the token list. Returns the nodes and the residual tokens.
-func readNodes(tokens: [String], nest n: Int = 0) -> ([Node], [String]) {
+/// Read nodes from the token list. Returns the nodes and the residual tokens.
+func readNodes(tokens: [Token], nest n: Int = 0) -> ([Node], [Token]) {
     var nodes = [Node]()
     var tokens1 = tokens
     var node: Node?
@@ -63,17 +100,17 @@ func readNodes(tokens: [String], nest n: Int = 0) -> ([Node], [String]) {
 }
 
 /// Read a node from the token list. Returns the node and the residual tokens.
-func readNode(tokens: [String], nest n: Int = 0) -> (Node?, [String]) {
+func readNode(tokens: [Token], nest n: Int = 0) -> (Node?, [Token]) {
     if tokens.count == 0 {return (nil, [])}
     let (t, ts) = (tokens[0], Array(tokens[1..<tokens.count]))
-    if t == "(" {
+    if t.value == "(" {
         let (nodes, tokens1) = readNodes(ts, nest: n + 1)
-        if tokens1.count == 0 || tokens1[0] != ")" {fatalError("missing )")}
+        if tokens1.count == 0 || tokens1[0].value != ")" {fatalError("missing )")}
         return (.Comp(args: nodes), Array(tokens1[1..<tokens1.count]))
-    } else if t == ")" {
+    } else if t.value == ")" {
         return (nil, tokens)
     } else {
-        return (makeAtom(t), ts)
+        return (makeAtom(t.value), ts)
     }
 }
 

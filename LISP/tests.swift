@@ -1,5 +1,14 @@
 import Foundation
 
+func runTokenizerTest(program: String, _ positions: [Position]) {
+    let tokens = tokenize(program)
+    for (token, position) in zip(tokens, positions) {
+        if token.position != position {
+            fatalError("failed tokenizer test for token \(token), expected position: \(position)")
+        }
+    }
+}
+
 func runTest(s0: State, _ program: String, test: (State -> Bool)) {
     if let p: Program = parse(program) {
         if !test(p.exec(s0)) {
@@ -21,4 +30,5 @@ func runTests() {
     runTest("(set x (+ 1 1 1 1 (- 10 5 3 2)))"){$0["x"] == 4}
     runTest(State(["x": 5]), "(if (> x 4) (set x 1))"){$0["x"] == 1}
     runTest(State(["x": 3]), "(if (> x 4) (set x 1))"){$0["x"] == 3}
+    runTokenizerTest("(set  x 1)\n(set y 2)", [[1,1],[1,2],[1,7],[1,9],[1,10],[2,1],[2,2],[2,6],[2,8],[2,9]])
 }
