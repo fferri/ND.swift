@@ -66,9 +66,9 @@ func tokenize(s: String) -> [Token] {
 
 /// A node is either: a compound, a number or a symbol
 enum Node : CustomStringConvertible {
-    case Comp(args: [Node])
-    case Symbol(name: String)
-    case Number(value: Int)
+    case Comp(args: [Node], position: Position)
+    case Symbol(name: String, position: Position)
+    case Number(value: Int, position: Position)
     var description: String {
         switch(self) {
         case Comp(let a): return "\(a)"
@@ -79,9 +79,12 @@ enum Node : CustomStringConvertible {
 }
 
 /// Construct an atom (number or symbol) from a string
-func makeAtom(s: String?) -> Node? {
-    if s == nil {return nil}
-    if let i = Int(s!) {return .Number(value: i)} else {return .Symbol(name: s!)}
+func makeAtom(token: Token) -> Node {
+    if let i = Int(token.value) {
+        return .Number(value: i, position: token.position)
+    } else {
+        return .Symbol(name: token.value, position: token.position)
+    }
 }
 
 /// Read nodes from the token list. Returns the nodes and the residual tokens.
@@ -102,12 +105,12 @@ func readNode(tokens: [Token], nest n: Int = 0) -> (Node?, [Token]) {
     let (t, ts) = (tokens[0], Array(tokens[1..<tokens.count]))
     if t.value == "(" {
         let (nodes, tokens1) = readNodes(ts, nest: n + 1)
-        if tokens1.count == 0 || tokens1[0].value != ")" {fatalError("missing )")}
-        return (.Comp(args: nodes), Array(tokens1[1..<tokens1.count]))
+        if tokens1.count == 0 || tokens1[0].value != ")" {fatalError("missing \")\" at \(tokens1[0].position)")}
+        return (.Comp(args: nodes, position: t.position), Array(tokens1[1..<tokens1.count]))
     } else if t.value == ")" {
         return (nil, tokens)
     } else {
-        return (makeAtom(t.value), ts)
+        return (makeAtom(t), ts)
     }
 }
 
@@ -134,17 +137,17 @@ func parseSExpr(s: String) -> Node {
 /// Translate a S-epression node into an Expr, or into nil if not possible
 func translateExpr(n: Node) -> Expr? {
     switch n {
-    case let .Number(value):
+    case let .Number(value, _):
         return Expr.Const(x: value)
-    case let .Comp(args):
+    case let .Comp(args, pos):
         let c = args.count
         if c > 0 {
             let ops = ["+", "-"]
             switch args[0] {
-            case let .Symbol(op):
+            case let .Symbol(op, _):
                 if !ops.contains(op) {return nil}
                 if c < 3 {
-                    fatalError("not enough arguments for (\(op))")
+                    fatalError("at \(pos): not enough arguments for (\(op))")
                 }
                 var e1: Expr! = translateExpr(args[1])
                 for i in 2..<c {
@@ -162,7 +165,7 @@ func translateExpr(n: Node) -> Expr? {
         } else {
             return nil
         }
-    case let .Symbol(name):
+    case let .Symbol(name, _):
         return Expr.Var(n: name)
     }
 }
@@ -170,36 +173,36 @@ func translateExpr(n: Node) -> Expr? {
 /// Translate a S-epression node into a BoolExpr, or into nil if not possible
 func translateBoolExpr(n: Node) -> BoolExpr? {
     switch n {
-    case let .Comp(args):
+    case let .Comp(args, pos):
         let c = args.count
         if c > 0 {
             let ops = ["and", "or", "not", "=", ">", "<"]
             switch args[0] {
-            case let .Symbol(op):
+            case let .Symbol(op, _):
                 if !ops.contains(op) {return nil}
                 switch op {
                 case "not":
-                    if c != 2 {fatalError("bad number of args for (\(op))")}
+                    if c != 2 {fatalError("at \(pos): bad number of args for (\(op))")}
                     return BoolExpr.Not(e: translateBoolExpr(args[1])!)
                 case "=":
-                    if c != 3 {fatalError("bad number of args for (\(op))")}
+                    if c != 3 {fatalError("at \(pos): bad number of args for (\(op))")}
                     return BoolExpr.Equal(a: translateExpr(args[1])!, b: translateExpr(args[2])!)
                 case "<":
-                    if c != 3 {fatalError("bad number of args for (\(op))")}
+                    if c != 3 {fatalError("at \(pos): bad number of args for (\(op))")}
                     return BoolExpr.LessThan(a: translateExpr(args[1])!, b: translateExpr(args[2])!)
                 case ">":
-                    if c != 3 {fatalError("bad number of args for (\(op))")}
+                    if c != 3 {fatalError("at \(pos): bad number of args for (\(op))")}
                     return BoolExpr.GreaterThan(a: translateExpr(args[1])!, b: translateExpr(args[2])!)
                 default:
                     if c < 3 {
-                        fatalError("not enough arguments for (\(op))")
+                        fatalError("at \(pos): not enough arguments for (\(op))")
                     }
                     var e1: BoolExpr! = translateBoolExpr(args[1])
                     for i in 2..<c {
                         let e2: BoolExpr! = translateBoolExpr(args[i])
                         switch args[0] {
-                        case .Symbol("and"): e1 = BoolExpr.And(a: e1, b: e2)
-                        case .Symbol("or"): e1 = BoolExpr.Or(a: e1, b: e2)
+                        case .Symbol("and", _): e1 = BoolExpr.And(a: e1, b: e2)
+                        case .Symbol("or", _): e1 = BoolExpr.Or(a: e1, b: e2)
                         default: return nil
                         }
                     }
@@ -219,36 +222,36 @@ func translateBoolExpr(n: Node) -> BoolExpr? {
 /// Translate a S-epression node into a Program, or into nil if not possible
 func translateProgram(n: Node) -> Program? {
     switch n {
-    case let .Comp(args):
+    case let .Comp(args, pos):
         let c = args.count
         if c > 0 {
             switch args[0] {
-            case let .Symbol(op):
+            case let .Symbol(op, _):
                 switch op {
                 case "set":
-                    if c != 3 {fatalError("\(op) has exactly 2 arguments")}
+                    if c != 3 {fatalError("at \(pos): \(op) has exactly 2 arguments")}
                     switch args[1] {
-                    case let .Symbol(name):
+                    case let .Symbol(name, _):
                         let expr = translateExpr(args[2])
                         return Assign(name: name, value: expr!)
                     default:
-                        fatalError("\(op)'s first argument is variable name")
+                        fatalError("at \(pos): \(op)'s first argument is variable name")
                     }
                 case "if":
-                    if c != 3 {fatalError("\(op) has exactly 2 arguments. use (...) to group multiple statements")}
+                    if c != 3 {fatalError("at \(pos): \(op) has exactly 2 arguments. use (...) to group multiple statements")}
                     let cond = translateBoolExpr(args[1])
                     let body = translateProgram(args[2])
                     return If(cond: cond!, body: body!)
                 case "while":
-                    if c != 3 {fatalError("\(op) has exactly 2 arguments. use (...) to group multiple statements")}
+                    if c != 3 {fatalError("at \(pos): \(op) has exactly 2 arguments. use (...) to group multiple statements")}
                     let cond = translateBoolExpr(args[1])
                     let body = translateProgram(args[2])
                     return While(cond: cond!, body: body!)
                 default:
                     return nil
                 }
-            case .Comp(_):
-                if args.count < 2 {fatalError("unneeded (..)")}
+            case .Comp(_): // a sequence of statements
+                if args.count < 2 {fatalError("at \(pos): unneeded (..)")}
                 var seq = Sequence(p1: translateProgram(args[0])!, p2: translateProgram(args[1])!)
                 for i in 2..<c {
                     seq = Sequence(p1: seq, p2: translateProgram(args[i])!)
