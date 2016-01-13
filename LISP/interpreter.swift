@@ -13,48 +13,111 @@ public struct State {
     }
 }
 
-public protocol Evaluable {
-    typealias ReturnType
-    func eval(s: State) -> ReturnType
+protocol AlgebraicExpr {
+    func eval(s: State) -> Int
 }
 
-public indirect enum Expr : Evaluable {
-    case Const(x: Int)
-    case Var(n: String)
-    case Add(a: Expr, b: Expr)
-    case Sub(a: Expr, b: Expr)
-    case Mul(a: Expr, b: Expr)
-    case Div(a: Expr, b: Expr)
+public struct Const : AlgebraicExpr {
+    var value: Int = 0
     
     public func eval(s: State) -> Int {
-        switch(self) {
-        case .Const(let x): return x
-        case .Var(let n): if let v = s[n] {return v} else {fatalError("no such variable \(n)")}
-        case .Add(let a, let b): return a.eval(s) + b.eval(s)
-        case .Sub(let a, let b): return a.eval(s) - b.eval(s)
-        case .Mul(let a, let b): return a.eval(s) * b.eval(s)
-        case .Div(let a, let b): return a.eval(s) / b.eval(s)
+        return value
+    }
+}
+
+public struct Var : AlgebraicExpr {
+    var name: String = ""
+    
+    public func eval(s: State) -> Int {
+        if let v = s[name] {
+            return v
+        } else {
+            fatalError("no such variable: \(name)")
         }
     }
 }
 
-public indirect enum BoolExpr : Evaluable {
-    case LessThan(a: Expr, b: Expr)
-    case Equal(a: Expr, b: Expr)
-    case GreaterThan(a: Expr, b: Expr)
-    case And(a: BoolExpr, b: BoolExpr)
-    case Or(a: BoolExpr, b: BoolExpr)
-    case Not(e: BoolExpr)
+public struct Add : AlgebraicExpr {
+    let a, b: AlgebraicExpr
+
+    public func eval(s: State) -> Int {
+        return a.eval(s) + b.eval(s)
+    }
+}
+
+public struct Sub : AlgebraicExpr {
+    let a, b: AlgebraicExpr
+    
+    public func eval(s: State) -> Int {
+        return a.eval(s) - b.eval(s)
+    }
+}
+
+public struct Mul : AlgebraicExpr {
+    let a, b: AlgebraicExpr
+    
+    public func eval(s: State) -> Int {
+        return a.eval(s) * b.eval(s)
+    }
+}
+
+public struct Div : AlgebraicExpr {
+    let a, b: AlgebraicExpr
+    
+    public func eval(s: State) -> Int {
+        return a.eval(s) / b.eval(s)
+    }
+}
+
+protocol BoolExpr {
+    func eval(s: State) -> Bool
+}
+
+public struct LessThan : BoolExpr {
+    let a, b: AlgebraicExpr
     
     public func eval(s: State) -> Bool {
-        switch(self) {
-        case .LessThan(let a, let b): return a.eval(s) < b.eval(s)
-        case .Equal(let a, let b): return a.eval(s) == b.eval(s)
-        case .GreaterThan(let a, let b): return a.eval(s) > b.eval(s)
-        case .And(let a, let b): return a.eval(s) && b.eval(s)
-        case .Or(let a, let b): return a.eval(s) || b.eval(s)
-        case .Not(let e): return !e.eval(s)
-        }
+        return a.eval(s) < b.eval(s)
+    }
+}
+
+public struct Equal : BoolExpr {
+    let a, b: AlgebraicExpr
+    
+    public func eval(s: State) -> Bool {
+        return a.eval(s) == b.eval(s)
+    }
+}
+
+public struct GreaterThan : BoolExpr {
+    let a, b: AlgebraicExpr
+    
+    public func eval(s: State) -> Bool {
+        return a.eval(s) > b.eval(s)
+    }
+}
+
+public struct And : BoolExpr {
+    let a, b: BoolExpr
+    
+    public func eval(s: State) -> Bool {
+        return a.eval(s) && b.eval(s)
+    }
+}
+
+public struct Or : BoolExpr {
+    let a, b: BoolExpr
+    
+    public func eval(s: State) -> Bool {
+        return a.eval(s) || b.eval(s)
+    }
+}
+
+public struct Not : BoolExpr {
+    let e: BoolExpr
+    
+    public func eval(s: State) -> Bool {
+        return !e.eval(s)
     }
 }
 
@@ -84,7 +147,7 @@ public struct Sequence : Program {
 
 public struct Assign : Program {
     let name: String
-    let value: Expr
+    let value: AlgebraicExpr
     
     public func trans(s: State) -> (Program, State)? {
         var s1 = s

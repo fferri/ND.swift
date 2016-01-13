@@ -1,9 +1,9 @@
 import Foundation
 
-func runTokenizerTest(program: String, _ positions: [Position]) {
+func runTokenizerTest(program: String, _ positions: [[Int]]) {
     let tokens = tokenize(program)
     for (token, position) in zip(tokens, positions) {
-        if token.position != position {
+        if token.position.line != position[0] || token.position.column != position[1] {
             fatalError("failed tokenizer test for token \(token), expected position: \(position)")
         }
     }

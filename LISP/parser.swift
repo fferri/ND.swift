@@ -6,28 +6,20 @@ struct Position : CustomStringConvertible {
     var description: String {return "line \(line) column \(column)"}
 }
 
-extension Position : ArrayLiteralConvertible {
-    init(arrayLiteral elements: Int...) {
-        if elements.count == 2 {
-            line = elements[0]
-            column = elements[1]
-        } else {
-            fatalError("too " + (elements.count > 2 ? "many" : "few") + " values to initialize Position")
-        }
-    }
-}
-
-extension Position : Equatable {}
-
-func ==(lhs: Position, rhs: Position) -> Bool {
-    return lhs.line == rhs.line && lhs.column == rhs.column
-}
-
 struct Token : CustomStringConvertible {
     var value = ""
     var position = Position()
     var length: Int {return value.characters.count}
     var description: String {return "\"\(value)\" at \(position)"}
+    var isNumber: Bool {
+        if let _ = Int(value) {return true} else {return false}
+    }
+    var isSpecial: Bool {
+        return value == "(" || value == ")"
+    }
+    var isSymbol: Bool {
+        return !isNumber && !isSpecial
+    }
 }
 
 /// Tokenize, i.e. convert a string into an array of tokens
@@ -64,206 +56,267 @@ func tokenize(s: String) -> [Token] {
     return tokens
 }
 
-/// A node is either: a compound, a number or a symbol
-enum Node {
-    case Comp(args: [Node], position: Position)
-    case Symbol(name: String, position: Position)
-    case Number(value: Int, position: Position)
-}
-
-/// Construct an atom (number or symbol) from a string
-func makeAtom(token: Token) -> Node {
-    if let i = Int(token.value) {
-        return .Number(value: i, position: token.position)
-    } else {
-        return .Symbol(name: token.value, position: token.position)
+class TokenStream {
+    let tokens: [Token]
+    var pos: Int = 0
+    var savedPos: Int = 0
+    
+    init(tokens t: [Token] = []) {
+        tokens = t
     }
-}
-
-/// Read nodes from the token list. Returns the nodes and the residual tokens.
-func readNodes(tokens: [Token], nest n: Int = 0) -> ([Node], [Token]) {
-    var nodes = [Node]()
-    var tokens1 = tokens
-    var node: Node?
-    while true {
-        (node, tokens1) = readNode(tokens1, nest: n)
-        if let node1 = node {nodes.append(node1)} else {break}
+    
+    func read() -> Token? {
+        if pos >= tokens.count {return nil}
+        defer {pos += 1}
+        return tokens[pos]
     }
-    return (nodes, tokens1)
-}
-
-/// Read a node from the token list. Returns the node and the residual tokens.
-func readNode(tokens: [Token], nest n: Int = 0) -> (Node?, [Token]) {
-    if tokens.count == 0 {return (nil, [])}
-    let (t, ts) = (tokens[0], Array(tokens[1..<tokens.count]))
-    if t.value == "(" {
-        let (nodes, tokens1) = readNodes(ts, nest: n + 1)
-        if tokens1.count == 0 || tokens1[0].value != ")" {fatalError("missing \")\" at \(tokens1[0].position)")}
-        return (.Comp(args: nodes, position: t.position), Array(tokens1[1..<tokens1.count]))
-    } else if t.value == ")" {
-        return (nil, tokens)
-    } else {
-        return (makeAtom(t), ts)
-    }
-}
-
-/// Parse a list of S-expressions (separated by whitespace)
-func parseSExprList(s: String) -> [Node] {
-    let toks = tokenize(s)
-    let (nodes, extraTokens) = readNodes(toks)
-    if extraTokens.count > 0 {
-        fatalError("unexpected \(extraTokens[0])")
-    }
-    return nodes
-}
-
-/// Parse a S-expressions
-func parseSExpr(s: String) -> Node {
-    let toks = tokenize(s)
-    let (node, extraTokens) = readNode(toks)
-    if extraTokens.count > 0 {
-        fatalError("unexpected \(extraTokens[0])")
-    }
-    return node!
-}
-
-/// Translate a S-epression node into an Expr, or into nil if not possible
-func translateExpr(n: Node) -> Expr? {
-    switch n {
-    case let .Number(value, _):
-        return Expr.Const(x: value)
-    case let .Comp(args, pos):
-        let c = args.count
-        if c > 0 {
-            let ops = ["+", "-", "*", "/"]
-            switch args[0] {
-            case let .Symbol(op, _):
-                if !ops.contains(op) {return nil}
-                if c < 3 {
-                    fatalError("at \(pos): not enough arguments for (\(op))")
-                }
-                var e1: Expr! = translateExpr(args[1])
-                for i in 2..<c {
-                    let e2: Expr! = translateExpr(args[i])
-                    switch op {
-                    case "+": e1 = Expr.Add(a: e1, b: e2)
-                    case "-": e1 = Expr.Sub(a: e1, b: e2)
-                    case "*": e1 = Expr.Mul(a: e1, b: e2)
-                    case "/": e1 = Expr.Div(a: e1, b: e2)
-                    default: return nil
-                    }
-                }
-                return e1
-            default:
-                return nil
-            }
-        } else {
-            return nil
+    
+    func t<T>(f: TokenStream -> T?) -> T? {
+        let oldpos = pos
+        if let ret = f(self) {
+            return ret
         }
-    case let .Symbol(name, _):
-        return Expr.Var(n: name)
-    }
-}
-
-/// Translate a S-epression node into a BoolExpr, or into nil if not possible
-func translateBoolExpr(n: Node) -> BoolExpr? {
-    switch n {
-    case let .Comp(args, pos):
-        let c = args.count
-        if c > 0 {
-            let ops = ["and", "or", "not", "=", ">", "<"]
-            switch args[0] {
-            case let .Symbol(op, _):
-                if !ops.contains(op) {return nil}
-                switch op {
-                case "not":
-                    if c != 2 {fatalError("at \(pos): bad number of args for (\(op))")}
-                    return BoolExpr.Not(e: translateBoolExpr(args[1])!)
-                case "=":
-                    if c != 3 {fatalError("at \(pos): bad number of args for (\(op))")}
-                    return BoolExpr.Equal(a: translateExpr(args[1])!, b: translateExpr(args[2])!)
-                case "<":
-                    if c != 3 {fatalError("at \(pos): bad number of args for (\(op))")}
-                    return BoolExpr.LessThan(a: translateExpr(args[1])!, b: translateExpr(args[2])!)
-                case ">":
-                    if c != 3 {fatalError("at \(pos): bad number of args for (\(op))")}
-                    return BoolExpr.GreaterThan(a: translateExpr(args[1])!, b: translateExpr(args[2])!)
-                default:
-                    if c < 3 {
-                        fatalError("at \(pos): not enough arguments for (\(op))")
-                    }
-                    var e1: BoolExpr! = translateBoolExpr(args[1])
-                    for i in 2..<c {
-                        let e2: BoolExpr! = translateBoolExpr(args[i])
-                        switch args[0] {
-                        case .Symbol("and", _): e1 = BoolExpr.And(a: e1, b: e2)
-                        case .Symbol("or", _): e1 = BoolExpr.Or(a: e1, b: e2)
-                        default: return nil
-                        }
-                    }
-                    return e1
-                }
-            default:
-                return nil
-            }
-        } else {
-            return nil
-        }
-    default:
+        pos = oldpos
         return nil
     }
 }
 
-/// Translate a S-epression node into a Program, or into nil if not possible
-func translateProgram(n: Node) -> Program? {
-    switch n {
-    case let .Comp(args, pos):
-        let c = args.count
-        if c > 0 {
-            switch args[0] {
-            case let .Symbol(op, _):
-                switch op {
-                case "set":
-                    if c != 3 {fatalError("at \(pos): \(op) has exactly 2 arguments")}
-                    switch args[1] {
-                    case let .Symbol(name, _):
-                        let expr = translateExpr(args[2])
-                        return Assign(name: name, value: expr!)
-                    default:
-                        fatalError("at \(pos): \(op)'s first argument is variable name")
-                    }
-                case "if":
-                    if c != 3 {fatalError("at \(pos): \(op) has exactly 2 arguments. use (...) to group multiple statements")}
-                    let cond = translateBoolExpr(args[1])
-                    let body = translateProgram(args[2])
-                    return If(cond: cond!, body: body!)
-                case "while":
-                    if c != 3 {fatalError("at \(pos): \(op) has exactly 2 arguments. use (...) to group multiple statements")}
-                    let cond = translateBoolExpr(args[1])
-                    let body = translateProgram(args[2])
-                    return While(cond: cond!, body: body!)
-                default:
-                    return nil
-                }
-            case .Comp(_): // a sequence of statements
-                if args.count < 2 {fatalError("at \(pos): unneeded (..)")}
-                var seq = Sequence(p1: translateProgram(args[0])!, p2: translateProgram(args[1])!)
-                for i in 2..<c {
-                    seq = Sequence(p1: seq, p2: translateProgram(args[i])!)
-                }
-                return seq
-            default:
-                return nil
+func readIntAtom(ts: TokenStream) -> Int? {
+    return ts.t{_ in
+        if let t = ts.read() {
+            if let i = Int(t.value) {
+                return i
             }
-        } else {
-            return nil
         }
-    default:
         return nil
     }
 }
 
-/// Parse a string into a program
+func readStringAtom(ts: TokenStream) -> String? {
+    return ts.t{_ in
+        if let t = ts.read() {
+            if t.isSymbol {
+                return t.value
+            }
+        }
+        return nil
+    }
+}
+
+func readConst(ts: TokenStream) -> AlgebraicExpr? {
+    if let i = readIntAtom(ts) {
+        return Const(value: i)
+    }
+    return nil
+}
+
+func readVar(ts: TokenStream) -> AlgebraicExpr? {
+    if let s = readStringAtom(ts) {
+        return Var(name: s)
+    }
+    return nil
+}
+
+func readAlgebraicBinaryOp(ts: TokenStream, op: String) -> [AlgebraicExpr]? {
+    return ts.t{_ in
+        guard let t1 = ts.read() where t1.value == "(" else {return nil}
+        guard let t2 = ts.read() where t2.value == op else {return nil}
+        var e = [AlgebraicExpr]()
+        while let en = readAlgebraicExpr(ts) {
+            e.append(en)
+        }
+        guard let t3 = ts.read() where t3.value == ")" else {return nil}
+        return e.count >= 2 ? e : nil
+    }
+}
+
+func readAdd(ts: TokenStream) -> AlgebraicExpr? {
+    guard let o = readAlgebraicBinaryOp(ts, op: "+") else {return nil}
+    var e = Add(a: o[0], b: o[1])
+    for i in 2..<o.count {
+        e = Add(a: e, b: o[i])
+    }
+    return e
+}
+
+func readSub(ts: TokenStream) -> AlgebraicExpr? {
+    guard let o = readAlgebraicBinaryOp(ts, op: "-") else {return nil}
+    var e = Sub(a: o[0], b: o[1])
+    for i in 2..<o.count {
+        e = Sub(a: e, b: o[i])
+    }
+    return e
+}
+
+func readMul(ts: TokenStream) -> AlgebraicExpr? {
+    guard let o = readAlgebraicBinaryOp(ts, op: "*") else {return nil}
+    var e = Mul(a: o[0], b: o[1])
+    for i in 2..<o.count {
+        e = Mul(a: e, b: o[i])
+    }
+    return e
+}
+
+func readDiv(ts: TokenStream) -> AlgebraicExpr? {
+    guard let o = readAlgebraicBinaryOp(ts, op: "/") else {return nil}
+    var e = Div(a: o[0], b: o[1])
+    for i in 2..<o.count {
+        e = Div(a: e, b: o[i])
+    }
+    return e
+}
+
+func readAlgebraicExpr(ts: TokenStream) -> AlgebraicExpr? {
+    if let x = readConst(ts) {return x}
+    if let x = readVar(ts) {return x}
+    if let x = readAdd(ts) {return x}
+    if let x = readSub(ts) {return x}
+    if let x = readMul(ts) {return x}
+    if let x = readDiv(ts) {return x}
+    return nil
+}
+
+func readBoolOp(ts: TokenStream, op: String) -> [BoolExpr]? {
+    return ts.t{_ in
+        guard let t1 = ts.read() where t1.value == "(" else {return nil}
+        guard let t2 = ts.read() where t2.value == op else {return nil}
+        var e = [BoolExpr]()
+        while let en = readBoolExpr(ts) {
+            e.append(en)
+        }
+        guard let t3 = ts.read() where t3.value == ")" else {return nil}
+        return e.count >= 2 ? e : nil
+    }
+}
+
+func readAnd(ts: TokenStream) -> BoolExpr? {
+    guard let o = readBoolOp(ts, op: "and") else {return nil}
+    var e = And(a: o[0], b: o[1])
+    for i in 2..<o.count {
+        e = And(a: e, b: o[i])
+    }
+    return e
+}
+
+func readOr(ts: TokenStream) -> BoolExpr? {
+    guard let o = readBoolOp(ts, op: "or") else {return nil}
+    var e = Or(a: o[0], b: o[1])
+    for i in 2..<o.count {
+        e = Or(a: e, b: o[i])
+    }
+    return e}
+
+func readNot(ts: TokenStream) -> BoolExpr? {
+    return ts.t{_ in
+        guard let t1 = ts.read() where t1.value == "(" else {return nil}
+        guard let t2 = ts.read() where t2.value == "not" else {return nil}
+        guard let e1 = readBoolExpr(ts) else {return nil}
+        guard let t3 = ts.read() where t3.value == ")" else {return nil}
+        return Not(e: e1)
+    }
+}
+
+func readRelationalOp(ts: TokenStream, op: String) -> (AlgebraicExpr, AlgebraicExpr)? {
+    return ts.t{_ in
+        guard let t1 = ts.read() where t1.value == "(" else {return nil}
+        guard let t2 = ts.read() where t2.value == op else {return nil}
+        guard let e1 = readAlgebraicExpr(ts) else {return nil}
+        guard let e2 = readAlgebraicExpr(ts) else {return nil}
+        guard let t3 = ts.read() where t3.value == ")" else {return nil}
+        return (e1, e2)
+    }
+}
+
+func readLessThan(ts: TokenStream) -> BoolExpr? {
+    guard let (e1, e2) = readRelationalOp(ts, op: "<") else {return nil}
+    return LessThan(a: e1, b: e2)
+}
+
+func readEqual(ts: TokenStream) -> BoolExpr? {
+    guard let (e1, e2) = readRelationalOp(ts, op: "=") else {return nil}
+    return Equal(a: e1, b: e2)
+}
+
+func readGreaterThan(ts: TokenStream) -> BoolExpr? {
+    guard let (e1, e2) = readRelationalOp(ts, op: ">") else {return nil}
+    return GreaterThan(a: e1, b: e2)
+}
+
+func readBoolExpr(ts: TokenStream) -> BoolExpr? {
+    if let x = readAnd(ts) {return x}
+    if let x = readOr(ts) {return x}
+    if let x = readNot(ts) {return x}
+    if let x = readLessThan(ts) {return x}
+    if let x = readEqual(ts) {return x}
+    if let x = readGreaterThan(ts) {return x}
+    return nil
+}
+
+func readSequence(ts: TokenStream) -> Program? {
+    return ts.t{_ in
+        guard let t1 = ts.read() where t1.value == "(" else {return nil}
+        guard let p1 = readProgram(ts) else {return nil}
+        guard let p2 = readProgram(ts) else {return nil}
+        var p = Sequence(p1: p1, p2: p2)
+        while let pn = readProgram(ts) {
+            p = Sequence(p1: p, p2: pn)
+        }
+        guard let t3 = ts.read() where t3.value == ")" else {return nil}
+        return p
+    }
+}
+
+func readAssign(ts: TokenStream) -> Program? {
+    return ts.t{_ in
+        guard let t1 = ts.read() where t1.value == "(" else {return nil}
+        guard let t2 = ts.read() where t2.value == "set" else {return nil}
+        guard let name = readStringAtom(ts) else {return nil}
+        guard let value = readAlgebraicExpr(ts) else {return nil}
+        guard let t3 = ts.read() where t3.value == ")" else {return nil}
+        return Assign(name: name, value: value)
+    }
+}
+
+func readIf(ts: TokenStream) -> Program? {
+    return ts.t{_ in
+        guard let t1 = ts.read() where t1.value == "(" else {return nil}
+        guard let t2 = ts.read() where t2.value == "if" else {return nil}
+        guard let cond = readBoolExpr(ts) else {return nil}
+        guard let body = readProgram(ts) else {return nil}
+        guard let t3 = ts.read() where t3.value == ")" else {return nil}
+        return If(cond: cond, body: body)
+    }
+}
+
+func readWhile(ts: TokenStream) -> Program? {
+    return ts.t{_ in
+        guard let t1 = ts.read() where t1.value == "(" else {return nil}
+        guard let t2 = ts.read() where t2.value == "while" else {return nil}
+        guard let cond = readBoolExpr(ts) else {return nil}
+        guard let body = readProgram(ts) else {return nil}
+        guard let t3 = ts.read() where t3.value == ")" else {return nil}
+        return While(cond: cond, body: body)
+    }
+}
+
+func readProgram(ts: TokenStream) -> Program? {
+    if let x = readSequence(ts) {return x}
+    if let x = readAssign(ts) {return x}
+    if let x = readIf(ts) {return x}
+    if let x = readWhile(ts) {return x}
+    return nil
+}
+
 func parse(s: String) -> Program? {
-    return translateProgram(parseSExpr(s))
+    let tokenStream = TokenStream(tokens: tokenize(s))
+    if let p = readProgram(tokenStream) {
+        if tokenStream.pos >= tokenStream.tokens.count {
+            return p
+        }
+    }
+    if let t = tokenStream.read() {
+        fatalError("unexpected \(t)")
+    } else {
+        fatalError("unexpected EOF")
+    }
 }

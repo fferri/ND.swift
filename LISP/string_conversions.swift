@@ -1,44 +1,80 @@
 import Foundation
 
-extension Node : CustomStringConvertible {
-    var description: String {
-        switch(self) {
-        case Comp(let a): return "\(a)"
-        case Symbol(let a): return "\"\(a)\""
-        case Number(let a): return "\(a)"
-        }
-    }
-}
-
 extension State : CustomStringConvertible {
     public var description: String {
         return "State(\(env))"
     }
 }
 
-extension Expr : CustomStringConvertible {
+extension Const : CustomStringConvertible {
     public var description: String {
-        switch(self) {
-        case let .Const(x): return "\(x)"
-        case let .Var(x): return "?\(x)"
-        case let .Add(a, b): return "(+ \(a) \(b))"
-        case let .Sub(a, b): return "(- \(a) \(b))"
-        case let .Mul(a, b): return "(* \(a) \(b))"
-        case let .Div(a, b): return "(/ \(a) \(b))"
-        }
+        return "\(value)"
     }
 }
 
-extension BoolExpr : CustomStringConvertible {
+extension Var : CustomStringConvertible {
     public var description: String {
-        switch(self) {
-        case let .LessThan(a, b): return "(< \(a) \(b))"
-        case let .Equal(a, b): return "(= \(a) \(b))"
-        case let .GreaterThan(a, b): return "(> \(a) \(b))"
-        case let .And(a, b): return "(and \(a) \(b))"
-        case let .Or(a, b): return "(or \(a) \(b))"
-        case let .Not(e): return "(not \(e))"
-        }
+        return "?\(name)"
+    }
+}
+
+extension Add : CustomStringConvertible {
+    public var description: String {
+        return "(+ \(a) \(b))"
+    }
+}
+
+extension Sub : CustomStringConvertible {
+    public var description: String {
+        return "(- \(a) \(b))"
+    }
+}
+
+extension Mul : CustomStringConvertible {
+    public var description: String {
+        return "(* \(a) \(b))"
+    }
+}
+
+extension Div : CustomStringConvertible {
+    public var description: String {
+        return "(/ \(a) \(b))"
+    }
+}
+
+extension LessThan : CustomStringConvertible {
+    public var description: String {
+        return "(< \(a) \(b))"
+    }
+}
+
+extension Equal : CustomStringConvertible {
+    public var description: String {
+        return "(= \(a) \(b))"
+    }
+}
+
+extension GreaterThan : CustomStringConvertible {
+    public var description: String {
+        return "(> \(a) \(b))"
+    }
+}
+
+extension And : CustomStringConvertible {
+    public var description: String {
+        return "(and \(a) \(b))"
+    }
+}
+
+extension Or : CustomStringConvertible {
+    public var description: String {
+        return "(or \(a) \(b))"
+    }
+}
+
+extension Not : CustomStringConvertible {
+    public var description: String {
+        return "(not \(e))"
     }
 }
 
