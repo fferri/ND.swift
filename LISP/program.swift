@@ -20,6 +20,7 @@ public class Program {
         if let x = Assign.readAssign(ts) {return x}
         if let x = If.readIf(ts) {return x}
         if let x = While.readWhile(ts) {return x}
+        if let x = Print.readPrint(ts) {return x}
         return nil
     }
 }
