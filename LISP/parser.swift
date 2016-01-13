@@ -81,235 +81,274 @@ class TokenStream {
     }
 }
 
-func readIntAtom(ts: TokenStream) -> Int? {
-    return ts.t{_ in
-        if let t = ts.read() {
-            if let i = Int(t.value) {
-                return i
-            }
+extension Const {
+    static func readConst(ts: TokenStream) -> AlgebraicExpr? {
+        if let i = AlgebraicExpr.readIntAtom(ts) {
+            return Const(i)
         }
         return nil
     }
 }
 
-func readStringAtom(ts: TokenStream) -> String? {
-    return ts.t{_ in
-        if let t = ts.read() {
-            if t.isSymbol {
-                return t.value
-            }
+extension Var {
+    static func readVar(ts: TokenStream) -> AlgebraicExpr? {
+        if let s = AlgebraicExpr.readStringAtom(ts) {
+            return Var(s)
         }
         return nil
     }
 }
 
-func readConst(ts: TokenStream) -> AlgebraicExpr? {
-    if let i = readIntAtom(ts) {
-        return Const(value: i)
-    }
-    return nil
-}
-
-func readVar(ts: TokenStream) -> AlgebraicExpr? {
-    if let s = readStringAtom(ts) {
-        return Var(name: s)
-    }
-    return nil
-}
-
-func readAlgebraicBinaryOp(ts: TokenStream, op: String) -> [AlgebraicExpr]? {
-    return ts.t{_ in
-        guard let t1 = ts.read() where t1.value == "(" else {return nil}
-        guard let t2 = ts.read() where t2.value == op else {return nil}
-        var e = [AlgebraicExpr]()
-        while let en = readAlgebraicExpr(ts) {
-            e.append(en)
+extension Add {
+    static func readAdd(ts: TokenStream) -> AlgebraicExpr? {
+        guard let o = AlgebraicExpr.readOp(ts, op: "+") else {return nil}
+        var e = Add(o[0], o[1])
+        for i in 2..<o.count {
+            e = Add(e, o[i])
         }
-        guard let t3 = ts.read() where t3.value == ")" else {return nil}
-        return e.count >= 2 ? e : nil
+        return e
     }
 }
 
-func readAdd(ts: TokenStream) -> AlgebraicExpr? {
-    guard let o = readAlgebraicBinaryOp(ts, op: "+") else {return nil}
-    var e = Add(a: o[0], b: o[1])
-    for i in 2..<o.count {
-        e = Add(a: e, b: o[i])
-    }
-    return e
-}
-
-func readSub(ts: TokenStream) -> AlgebraicExpr? {
-    guard let o = readAlgebraicBinaryOp(ts, op: "-") else {return nil}
-    var e = Sub(a: o[0], b: o[1])
-    for i in 2..<o.count {
-        e = Sub(a: e, b: o[i])
-    }
-    return e
-}
-
-func readMul(ts: TokenStream) -> AlgebraicExpr? {
-    guard let o = readAlgebraicBinaryOp(ts, op: "*") else {return nil}
-    var e = Mul(a: o[0], b: o[1])
-    for i in 2..<o.count {
-        e = Mul(a: e, b: o[i])
-    }
-    return e
-}
-
-func readDiv(ts: TokenStream) -> AlgebraicExpr? {
-    guard let o = readAlgebraicBinaryOp(ts, op: "/") else {return nil}
-    var e = Div(a: o[0], b: o[1])
-    for i in 2..<o.count {
-        e = Div(a: e, b: o[i])
-    }
-    return e
-}
-
-func readAlgebraicExpr(ts: TokenStream) -> AlgebraicExpr? {
-    if let x = readConst(ts) {return x}
-    if let x = readVar(ts) {return x}
-    if let x = readAdd(ts) {return x}
-    if let x = readSub(ts) {return x}
-    if let x = readMul(ts) {return x}
-    if let x = readDiv(ts) {return x}
-    return nil
-}
-
-func readBoolOp(ts: TokenStream, op: String) -> [BoolExpr]? {
-    return ts.t{_ in
-        guard let t1 = ts.read() where t1.value == "(" else {return nil}
-        guard let t2 = ts.read() where t2.value == op else {return nil}
-        var e = [BoolExpr]()
-        while let en = readBoolExpr(ts) {
-            e.append(en)
+extension Sub {
+    static func readSub(ts: TokenStream) -> AlgebraicExpr? {
+        guard let o = AlgebraicExpr.readOp(ts, op: "-") else {return nil}
+        var e = Sub(o[0], o[1])
+        for i in 2..<o.count {
+            e = Sub(e, o[i])
         }
-        guard let t3 = ts.read() where t3.value == ")" else {return nil}
-        return e.count >= 2 ? e : nil
+        return e
     }
 }
 
-func readAnd(ts: TokenStream) -> BoolExpr? {
-    guard let o = readBoolOp(ts, op: "and") else {return nil}
-    var e = And(a: o[0], b: o[1])
-    for i in 2..<o.count {
-        e = And(a: e, b: o[i])
-    }
-    return e
-}
-
-func readOr(ts: TokenStream) -> BoolExpr? {
-    guard let o = readBoolOp(ts, op: "or") else {return nil}
-    var e = Or(a: o[0], b: o[1])
-    for i in 2..<o.count {
-        e = Or(a: e, b: o[i])
-    }
-    return e}
-
-func readNot(ts: TokenStream) -> BoolExpr? {
-    return ts.t{_ in
-        guard let t1 = ts.read() where t1.value == "(" else {return nil}
-        guard let t2 = ts.read() where t2.value == "not" else {return nil}
-        guard let e1 = readBoolExpr(ts) else {return nil}
-        guard let t3 = ts.read() where t3.value == ")" else {return nil}
-        return Not(e: e1)
-    }
-}
-
-func readRelationalOp(ts: TokenStream, op: String) -> (AlgebraicExpr, AlgebraicExpr)? {
-    return ts.t{_ in
-        guard let t1 = ts.read() where t1.value == "(" else {return nil}
-        guard let t2 = ts.read() where t2.value == op else {return nil}
-        guard let e1 = readAlgebraicExpr(ts) else {return nil}
-        guard let e2 = readAlgebraicExpr(ts) else {return nil}
-        guard let t3 = ts.read() where t3.value == ")" else {return nil}
-        return (e1, e2)
-    }
-}
-
-func readLessThan(ts: TokenStream) -> BoolExpr? {
-    guard let (e1, e2) = readRelationalOp(ts, op: "<") else {return nil}
-    return LessThan(a: e1, b: e2)
-}
-
-func readEqual(ts: TokenStream) -> BoolExpr? {
-    guard let (e1, e2) = readRelationalOp(ts, op: "=") else {return nil}
-    return Equal(a: e1, b: e2)
-}
-
-func readGreaterThan(ts: TokenStream) -> BoolExpr? {
-    guard let (e1, e2) = readRelationalOp(ts, op: ">") else {return nil}
-    return GreaterThan(a: e1, b: e2)
-}
-
-func readBoolExpr(ts: TokenStream) -> BoolExpr? {
-    if let x = readAnd(ts) {return x}
-    if let x = readOr(ts) {return x}
-    if let x = readNot(ts) {return x}
-    if let x = readLessThan(ts) {return x}
-    if let x = readEqual(ts) {return x}
-    if let x = readGreaterThan(ts) {return x}
-    return nil
-}
-
-func readSequence(ts: TokenStream) -> Program? {
-    return ts.t{_ in
-        guard let t1 = ts.read() where t1.value == "(" else {return nil}
-        guard let p1 = readProgram(ts) else {return nil}
-        guard let p2 = readProgram(ts) else {return nil}
-        var p = Sequence(p1: p1, p2: p2)
-        while let pn = readProgram(ts) {
-            p = Sequence(p1: p, p2: pn)
+extension Mul {
+    static func readMul(ts: TokenStream) -> AlgebraicExpr? {
+        guard let o = AlgebraicExpr.readOp(ts, op: "*") else {return nil}
+        var e = Mul(o[0], o[1])
+        for i in 2..<o.count {
+            e = Mul(e, o[i])
         }
-        guard let t3 = ts.read() where t3.value == ")" else {return nil}
-        return p
+        return e
     }
 }
 
-func readAssign(ts: TokenStream) -> Program? {
-    return ts.t{_ in
-        guard let t1 = ts.read() where t1.value == "(" else {return nil}
-        guard let t2 = ts.read() where t2.value == "set" else {return nil}
-        guard let name = readStringAtom(ts) else {return nil}
-        guard let value = readAlgebraicExpr(ts) else {return nil}
-        guard let t3 = ts.read() where t3.value == ")" else {return nil}
-        return Assign(name: name, value: value)
+extension Div {
+    static func readDiv(ts: TokenStream) -> AlgebraicExpr? {
+        guard let o = AlgebraicExpr.readOp(ts, op: "/") else {return nil}
+        var e = Div(o[0], o[1])
+        for i in 2..<o.count {
+            e = Div(e, o[i])
+        }
+        return e
     }
 }
 
-func readIf(ts: TokenStream) -> Program? {
-    return ts.t{_ in
-        guard let t1 = ts.read() where t1.value == "(" else {return nil}
-        guard let t2 = ts.read() where t2.value == "if" else {return nil}
-        guard let cond = readBoolExpr(ts) else {return nil}
-        guard let body = readProgram(ts) else {return nil}
-        guard let t3 = ts.read() where t3.value == ")" else {return nil}
-        return If(cond: cond, body: body)
+extension AlgebraicExpr {
+    static func readIntAtom(ts: TokenStream) -> Int? {
+        return ts.t{_ in
+            if let t = ts.read() {
+                if let i = Int(t.value) {
+                    return i
+                }
+            }
+            return nil
+        }
+    }
+    
+    static func readStringAtom(ts: TokenStream) -> String? {
+        return ts.t{_ in
+            if let t = ts.read() {
+                if t.isSymbol {
+                    return t.value
+                }
+            }
+            return nil
+        }
+    }
+    
+    static func readOp(ts: TokenStream, op: String) -> [AlgebraicExpr]? {
+        return ts.t{_ in
+            guard let t1 = ts.read() where t1.value == "(" else {return nil}
+            guard let t2 = ts.read() where t2.value == op else {return nil}
+            var e = [AlgebraicExpr]()
+            while let en = AlgebraicExpr.readAlgebraicExpr(ts) {
+                e.append(en)
+            }
+            guard let t3 = ts.read() where t3.value == ")" else {return nil}
+            return e.count >= 2 ? e : nil
+        }
+    }
+    
+    static func readAlgebraicExpr(ts: TokenStream) -> AlgebraicExpr? {
+        if let x = Const.readConst(ts) {return x}
+        if let x = Var.readVar(ts) {return x}
+        if let x = Add.readAdd(ts) {return x}
+        if let x = Sub.readSub(ts) {return x}
+        if let x = Mul.readMul(ts) {return x}
+        if let x = Div.readDiv(ts) {return x}
+        return nil
     }
 }
 
-func readWhile(ts: TokenStream) -> Program? {
-    return ts.t{_ in
-        guard let t1 = ts.read() where t1.value == "(" else {return nil}
-        guard let t2 = ts.read() where t2.value == "while" else {return nil}
-        guard let cond = readBoolExpr(ts) else {return nil}
-        guard let body = readProgram(ts) else {return nil}
-        guard let t3 = ts.read() where t3.value == ")" else {return nil}
-        return While(cond: cond, body: body)
+extension And {
+    static func readAnd(ts: TokenStream) -> BoolExpr? {
+        guard let o = BoolExpr.readOp(ts, op: "and") else {return nil}
+        var e = And(o[0], o[1])
+        for i in 2..<o.count {
+            e = And(e, o[i])
+        }
+        return e
     }
 }
 
-func readProgram(ts: TokenStream) -> Program? {
-    if let x = readSequence(ts) {return x}
-    if let x = readAssign(ts) {return x}
-    if let x = readIf(ts) {return x}
-    if let x = readWhile(ts) {return x}
-    return nil
+extension Or {
+    static func readOr(ts: TokenStream) -> BoolExpr? {
+        guard let o = BoolExpr.readOp(ts, op: "or") else {return nil}
+        var e = Or(o[0], o[1])
+        for i in 2..<o.count {
+            e = Or(e, o[i])
+        }
+        return e
+    }
+}
+
+extension Not {
+    static func readNot(ts: TokenStream) -> BoolExpr? {
+        return ts.t{_ in
+            guard let t1 = ts.read() where t1.value == "(" else {return nil}
+            guard let t2 = ts.read() where t2.value == "not" else {return nil}
+            guard let e1 = BoolExpr.readBoolExpr(ts) else {return nil}
+            guard let t3 = ts.read() where t3.value == ")" else {return nil}
+            return Not(e1)
+        }
+    }
+}
+
+extension LessThan {
+    static func readLessThan(ts: TokenStream) -> BoolExpr? {
+        guard let (e1, e2) = BoolExpr.readRelOp(ts, op: "<") else {return nil}
+        return LessThan(e1, e2)
+    }
+}
+
+extension Equal {
+    static func readEqual(ts: TokenStream) -> BoolExpr? {
+        guard let (e1, e2) = BoolExpr.readRelOp(ts, op: "=") else {return nil}
+        return Equal(e1, e2)
+    }
+}
+
+extension GreaterThan {
+    static func readGreaterThan(ts: TokenStream) -> BoolExpr? {
+        guard let (e1, e2) = BoolExpr.readRelOp(ts, op: ">") else {return nil}
+        return GreaterThan(e1, e2)
+    }
+}
+
+extension BoolExpr {
+    static func readRelOp(ts: TokenStream, op: String) -> (AlgebraicExpr, AlgebraicExpr)? {
+        return ts.t{_ in
+            guard let t1 = ts.read() where t1.value == "(" else {return nil}
+            guard let t2 = ts.read() where t2.value == op else {return nil}
+            guard let e1 = AlgebraicExpr.readAlgebraicExpr(ts) else {return nil}
+            guard let e2 = AlgebraicExpr.readAlgebraicExpr(ts) else {return nil}
+            guard let t3 = ts.read() where t3.value == ")" else {return nil}
+            return (e1, e2)
+        }
+    }
+    
+    static func readOp(ts: TokenStream, op: String) -> [BoolExpr]? {
+        return ts.t{_ in
+            guard let t1 = ts.read() where t1.value == "(" else {return nil}
+            guard let t2 = ts.read() where t2.value == op else {return nil}
+            var e = [BoolExpr]()
+            while let en = BoolExpr.readBoolExpr(ts) {
+                e.append(en)
+            }
+            guard let t3 = ts.read() where t3.value == ")" else {return nil}
+            return e.count >= 2 ? e : nil
+        }
+    }
+    
+    static func readBoolExpr(ts: TokenStream) -> BoolExpr? {
+        if let x = And.readAnd(ts) {return x}
+        if let x = Or.readOr(ts) {return x}
+        if let x = Not.readNot(ts) {return x}
+        if let x = LessThan.readLessThan(ts) {return x}
+        if let x = Equal.readEqual(ts) {return x}
+        if let x = GreaterThan.readGreaterThan(ts) {return x}
+        return nil
+    }
+}
+
+extension Sequence {
+    static func readSequence(ts: TokenStream) -> Program? {
+        return ts.t{_ in
+            guard let t1 = ts.read() where t1.value == "(" else {return nil}
+            guard let p1 = Program.readProgram(ts) else {return nil}
+            guard let p2 = Program.readProgram(ts) else {return nil}
+            var p = Sequence(p1, p2)
+            while let pn = Program.readProgram(ts) {
+                p = Sequence(p, pn)
+            }
+            guard let t3 = ts.read() where t3.value == ")" else {return nil}
+            return p
+        }
+    }
+}
+
+extension Assign {
+    static func readAssign(ts: TokenStream) -> Program? {
+        return ts.t{_ in
+            guard let t1 = ts.read() where t1.value == "(" else {return nil}
+            guard let t2 = ts.read() where t2.value == "set" else {return nil}
+            guard let name = AlgebraicExpr.readStringAtom(ts) else {return nil}
+            guard let value = AlgebraicExpr.readAlgebraicExpr(ts) else {return nil}
+            guard let t3 = ts.read() where t3.value == ")" else {return nil}
+            return Assign(name, value)
+        }
+    }
+}
+
+extension If {
+    static func readIf(ts: TokenStream) -> Program? {
+        return ts.t{_ in
+            guard let t1 = ts.read() where t1.value == "(" else {return nil}
+            guard let t2 = ts.read() where t2.value == "if" else {return nil}
+            guard let cond = BoolExpr.readBoolExpr(ts) else {return nil}
+            guard let body = Program.readProgram(ts) else {return nil}
+            guard let t3 = ts.read() where t3.value == ")" else {return nil}
+            return If(cond, body)
+        }
+    }
+}
+
+extension While {
+    static func readWhile(ts: TokenStream) -> Program? {
+        return ts.t{_ in
+            guard let t1 = ts.read() where t1.value == "(" else {return nil}
+            guard let t2 = ts.read() where t2.value == "while" else {return nil}
+            guard let cond = BoolExpr.readBoolExpr(ts) else {return nil}
+            guard let body = Program.readProgram(ts) else {return nil}
+            guard let t3 = ts.read() where t3.value == ")" else {return nil}
+            return While(cond, body)
+        }
+    }
+}
+
+extension Program {
+    static func readProgram(ts: TokenStream) -> Program? {
+        if let x = Sequence.readSequence(ts) {return x}
+        if let x = Assign.readAssign(ts) {return x}
+        if let x = If.readIf(ts) {return x}
+        if let x = While.readWhile(ts) {return x}
+        return nil
+    }
 }
 
 func parse(s: String) -> Program? {
     let tokenStream = TokenStream(tokens: tokenize(s))
-    if let p = readProgram(tokenStream) {
+    if let p = Program.readProgram(tokenStream) {
         if tokenStream.pos >= tokenStream.tokens.count {
             return p
         }
