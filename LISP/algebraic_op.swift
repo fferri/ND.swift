@@ -18,6 +18,3 @@ public class AlgebraicOp : AlgebraicExpr {
         return e.count >= 2 ? e : abort()
     }
 }
-
-
-
