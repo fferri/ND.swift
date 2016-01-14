@@ -14,13 +14,4 @@ class TokenStream {
         defer {pos += 1}
         return tokens[pos]
     }
-    
-    func t<T>(f: TokenStream -> T?) -> T? {
-        let oldpos = pos
-        if let ret = f(self) {
-            return ret
-        }
-        pos = oldpos
-        return nil
-    }
 }

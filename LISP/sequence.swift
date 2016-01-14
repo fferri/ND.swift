@@ -19,19 +19,19 @@ public class Sequence : Program, CustomStringConvertible {
     }
 
     override class func parse(ts: TokenStream) -> Program? {
-        return ts.t{_ in
-            guard let t1 = ts.read() where t1.value == "(" else {return nil}
-            guard let p1 = Program.parse(ts) else {return nil}
-            guard let p2 = Program.parse(ts) else {return nil}
-            var p = Sequence(p1, p2)
-            while let pn = Program.parse(ts) {
-                p = Sequence(p, pn)
-            }
-            guard let t3 = ts.read() where t3.value == ")" else {return nil}
-            return p
+        let oldpos = ts.pos
+        let abort = {() -> Program? in ts.pos = oldpos; return nil}
+        guard let t1 = ts.read() where t1.value == "(" else {return abort()}
+        guard let p1 = Program.parse(ts) else {return abort()}
+        guard let p2 = Program.parse(ts) else {return abort()}
+        var p = Sequence(p1, p2)
+        while let pn = Program.parse(ts) {
+            p = Sequence(p, pn)
         }
+        guard let t3 = ts.read() where t3.value == ")" else {return abort()}
+        return p
     }
-    
+
     public var description: String {
         return "(\(p1) \(p2))"
     }

@@ -20,16 +20,16 @@ public class Assign : Program, CustomStringConvertible {
     }
     
     override class func parse(ts: TokenStream) -> Program? {
-        return ts.t{_ in
-            guard let t1 = ts.read() where t1.value == "(" else {return nil}
-            guard let t2 = ts.read() where t2.value == "set" else {return nil}
-            guard let name = Var.readStringAtom(ts) else {return nil}
-            guard let value = AlgebraicExpr.parse(ts) else {return nil}
-            guard let t3 = ts.read() where t3.value == ")" else {return nil}
-            return Assign(name, value)
-        }
+        let oldpos = ts.pos
+        let abort = {() -> Program? in ts.pos = oldpos; return nil}
+        guard let t1 = ts.read() where t1.value == "(" else {return abort()}
+        guard let t2 = ts.read() where t2.value == "set" else {return abort()}
+        guard let name = Var.readStringAtom(ts) else {return abort()}
+        guard let value = AlgebraicExpr.parse(ts) else {return abort()}
+        guard let t3 = ts.read() where t3.value == ")" else {return abort()}
+        return Assign(name, value)
     }
-    
+
     public var description: String {
         return "(set \(name) \(value))"
     }

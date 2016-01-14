@@ -12,14 +12,14 @@ public class Const : AlgebraicExpr, CustomStringConvertible {
     }
 
     class func readIntAtom(ts: TokenStream) -> Int? {
-        return ts.t{_ in
-            if let t = ts.read() {
-                if let i = Int(t.value) {
-                    return i
-                }
+        let oldpos = ts.pos
+        let abort = {() -> Int? in ts.pos = oldpos; return nil}
+        if let t = ts.read() {
+            if let i = Int(t.value) {
+                return i
             }
-            return nil
         }
+        return abort()
     }
     
     override class func parse(ts: TokenStream) -> AlgebraicExpr? {

@@ -22,14 +22,14 @@ public class If : Program, CustomStringConvertible {
     }
     
     override class func parse(ts: TokenStream) -> Program? {
-        return ts.t{_ in
-            guard let t1 = ts.read() where t1.value == "(" else {return nil}
-            guard let t2 = ts.read() where t2.value == "if" else {return nil}
-            guard let cond = BoolExpr.parse(ts) else {return nil}
-            guard let body = Program.parse(ts) else {return nil}
-            guard let t3 = ts.read() where t3.value == ")" else {return nil}
-            return If(cond, body)
-        }
+        let oldpos = ts.pos
+        let abort = {() -> Program? in ts.pos = oldpos; return nil}
+        guard let t1 = ts.read() where t1.value == "(" else {return abort()}
+        guard let t2 = ts.read() where t2.value == "if" else {return abort()}
+        guard let cond = BoolExpr.parse(ts) else {return abort()}
+        guard let body = Program.parse(ts) else {return abort()}
+        guard let t3 = ts.read() where t3.value == ")" else {return abort()}
+        return If(cond, body)
     }
     
     public var description: String {

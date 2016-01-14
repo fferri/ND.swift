@@ -17,14 +17,14 @@ public class Var : AlgebraicExpr, CustomStringConvertible {
     }
 
     class func readStringAtom(ts: TokenStream) -> String? {
-        return ts.t{_ in
-            if let t = ts.read() {
-                if t.isSymbol {
-                    return t.value
-                }
+        let oldpos = ts.pos
+        let abort = {() -> String? in ts.pos = oldpos; return nil}
+        if let t = ts.read() {
+            if t.isSymbol {
+                return t.value
             }
-            return nil
         }
+        return abort()
     }
     
     override class func parse(ts: TokenStream) -> AlgebraicExpr? {
