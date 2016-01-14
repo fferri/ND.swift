@@ -18,13 +18,13 @@ public class Sequence : Program, CustomStringConvertible {
         return p1.final(s) && p2.final(s)
     }
 
-    static func readSequence(ts: TokenStream) -> Program? {
+    override class func parse(ts: TokenStream) -> Program? {
         return ts.t{_ in
             guard let t1 = ts.read() where t1.value == "(" else {return nil}
-            guard let p1 = Program.readProgram(ts) else {return nil}
-            guard let p2 = Program.readProgram(ts) else {return nil}
+            guard let p1 = Program.parse(ts) else {return nil}
+            guard let p2 = Program.parse(ts) else {return nil}
             var p = Sequence(p1, p2)
-            while let pn = Program.readProgram(ts) {
+            while let pn = Program.parse(ts) {
                 p = Sequence(p, pn)
             }
             guard let t3 = ts.read() where t3.value == ")" else {return nil}

@@ -1,6 +1,6 @@
 import Foundation
 
-public class GreaterThan : BoolExpr, CustomStringConvertible {
+public class GreaterThan : RelationalOp, CustomStringConvertible {
     let a, b: AlgebraicExpr
     
     init(_ a: AlgebraicExpr, _ b: AlgebraicExpr) {
@@ -12,8 +12,8 @@ public class GreaterThan : BoolExpr, CustomStringConvertible {
         return a.eval(s) > b.eval(s)
     }
 
-    static func readGreaterThan(ts: TokenStream) -> BoolExpr? {
-        guard let (e1, e2) = BoolExpr.readRelOp(ts, op: ">") else {return nil}
+    override class func parse(ts: TokenStream) -> BoolExpr? {
+        guard let (e1, e2) = RelationalOp.parse(ts, op: ">") else {return nil}
         return GreaterThan(e1, e2)
     }
     

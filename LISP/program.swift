@@ -15,12 +15,12 @@ public class Program {
         return p1.exec(s1)
     }
     
-    static func readProgram(ts: TokenStream) -> Program? {
-        if let x = Sequence.readSequence(ts) {return x}
-        if let x = Assign.readAssign(ts) {return x}
-        if let x = If.readIf(ts) {return x}
-        if let x = While.readWhile(ts) {return x}
-        if let x = Print.readPrint(ts) {return x}
+    class func parse(ts: TokenStream) -> Program? {
+        if let x = Sequence.parse(ts) {return x}
+        if let x = Assign.parse(ts) {return x}
+        if let x = If.parse(ts) {return x}
+        if let x = While.parse(ts) {return x}
+        if let x = Print.parse(ts) {return x}
         return nil
     }
 }

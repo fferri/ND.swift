@@ -19,12 +19,12 @@ public class Assign : Program, CustomStringConvertible {
         return false
     }
     
-    static func readAssign(ts: TokenStream) -> Program? {
+    override class func parse(ts: TokenStream) -> Program? {
         return ts.t{_ in
             guard let t1 = ts.read() where t1.value == "(" else {return nil}
             guard let t2 = ts.read() where t2.value == "set" else {return nil}
-            guard let name = AlgebraicExpr.readStringAtom(ts) else {return nil}
-            guard let value = AlgebraicExpr.readAlgebraicExpr(ts) else {return nil}
+            guard let name = Var.readStringAtom(ts) else {return nil}
+            guard let value = AlgebraicExpr.parse(ts) else {return nil}
             guard let t3 = ts.read() where t3.value == ")" else {return nil}
             return Assign(name, value)
         }

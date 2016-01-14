@@ -1,6 +1,6 @@
 import Foundation
 
-public class Equal : BoolExpr, CustomStringConvertible {
+public class Equal : RelationalOp, CustomStringConvertible {
     let a, b: AlgebraicExpr
     
     init(_ a: AlgebraicExpr, _ b: AlgebraicExpr) {
@@ -12,8 +12,8 @@ public class Equal : BoolExpr, CustomStringConvertible {
         return a.eval(s) == b.eval(s)
     }
 
-    static func readEqual(ts: TokenStream) -> BoolExpr? {
-        guard let (e1, e2) = BoolExpr.readRelOp(ts, op: "=") else {return nil}
+    override class func parse(ts: TokenStream) -> BoolExpr? {
+        guard let (e1, e2) = RelationalOp.parse(ts, op: "=") else {return nil}
         return Equal(e1, e2)
     }
     

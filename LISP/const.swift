@@ -11,8 +11,19 @@ public class Const : AlgebraicExpr, CustomStringConvertible {
         return value
     }
 
-    static func readConst(ts: TokenStream) -> AlgebraicExpr? {
-        if let i = AlgebraicExpr.readIntAtom(ts) {
+    class func readIntAtom(ts: TokenStream) -> Int? {
+        return ts.t{_ in
+            if let t = ts.read() {
+                if let i = Int(t.value) {
+                    return i
+                }
+            }
+            return nil
+        }
+    }
+    
+    override class func parse(ts: TokenStream) -> AlgebraicExpr? {
+        if let i = readIntAtom(ts) {
             return Const(i)
         }
         return nil

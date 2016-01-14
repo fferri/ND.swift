@@ -16,8 +16,19 @@ public class Var : AlgebraicExpr, CustomStringConvertible {
         }
     }
 
-    static func readVar(ts: TokenStream) -> AlgebraicExpr? {
-        if let s = AlgebraicExpr.readStringAtom(ts) {
+    class func readStringAtom(ts: TokenStream) -> String? {
+        return ts.t{_ in
+            if let t = ts.read() {
+                if t.isSymbol {
+                    return t.value
+                }
+            }
+            return nil
+        }
+    }
+    
+    override class func parse(ts: TokenStream) -> AlgebraicExpr? {
+        if let s = readStringAtom(ts) {
             return Var(s)
         }
         return nil

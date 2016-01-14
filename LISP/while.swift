@@ -21,12 +21,12 @@ public class While : Program, CustomStringConvertible {
         return !cond.eval(s) || body.final(s)
     }
     
-    static func readWhile(ts: TokenStream) -> Program? {
+    override class func parse(ts: TokenStream) -> Program? {
         return ts.t{_ in
             guard let t1 = ts.read() where t1.value == "(" else {return nil}
             guard let t2 = ts.read() where t2.value == "while" else {return nil}
-            guard let cond = BoolExpr.readBoolExpr(ts) else {return nil}
-            guard let body = Program.readProgram(ts) else {return nil}
+            guard let cond = BoolExpr.parse(ts) else {return nil}
+            guard let body = Program.parse(ts) else {return nil}
             guard let t3 = ts.read() where t3.value == ")" else {return nil}
             return While(cond, body)
         }
