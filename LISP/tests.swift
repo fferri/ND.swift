@@ -23,7 +23,12 @@ func runTest(p: String, test t: (State -> Bool)) {
     return runTest(State(), p, test: t)
 }
 
+func runTest(p: String) {
+    return runTest(p){_ in true}
+}
+
 func runTests() {
+    runTest("((def printDouble (x) ((set y (* 2 x)) (print y))) (printDouble 2))")
     runTest("(set x 1)"){$0["x"] == 1}
     runTest("((set x 5) (set y 4) (set z 0)" +
         "(while (> y 0) ((set z (+ x z)) (set y (- y 1)))))"){$0["z"] == 20}

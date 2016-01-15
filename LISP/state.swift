@@ -2,6 +2,7 @@ import Foundation
 
 public struct State {
     var env = Dictionary<String, Int>()
+    var funcs = Dictionary<String, FuncDecl>()
     
     init(_ d: Dictionary<String, Int> = [:]) {
         env = d

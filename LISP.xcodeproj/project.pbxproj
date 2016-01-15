@@ -38,6 +38,8 @@
 		7A80C80F1C47E00400E74810 /* algebraic_op.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A80C80E1C47E00400E74810 /* algebraic_op.swift */; };
 		7A80C8111C47E12200E74810 /* relational_op.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A80C8101C47E12200E74810 /* relational_op.swift */; };
 		7A80C8131C47E19900E74810 /* bool_op.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A80C8121C47E19900E74810 /* bool_op.swift */; };
+		7A80C8191C49541400E74810 /* func_call.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A80C8181C49541400E74810 /* func_call.swift */; };
+		7A80C81B1C49541B00E74810 /* func_decl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A80C81A1C49541B00E74810 /* func_decl.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -85,6 +87,8 @@
 		7A80C80E1C47E00400E74810 /* algebraic_op.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = algebraic_op.swift; sourceTree = "<group>"; };
 		7A80C8101C47E12200E74810 /* relational_op.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = relational_op.swift; sourceTree = "<group>"; };
 		7A80C8121C47E19900E74810 /* bool_op.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = bool_op.swift; sourceTree = "<group>"; };
+		7A80C8181C49541400E74810 /* func_call.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = func_call.swift; sourceTree = "<group>"; };
+		7A80C81A1C49541B00E74810 /* func_decl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = func_decl.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,6 +112,8 @@
 				7A1EDFAD1C4700BE004506E2 /* sequence.swift */,
 				7A1EDFAF1C470101004506E2 /* empty.swift */,
 				7A1EDFCD1C470AA7004506E2 /* print.swift */,
+				7A80C8181C49541400E74810 /* func_call.swift */,
+				7A80C81A1C49541B00E74810 /* func_decl.swift */,
 			);
 			name = program;
 			sourceTree = "<group>";
@@ -249,6 +255,7 @@
 				7A1EDFC21C4701D8004506E2 /* var.swift in Sources */,
 				7A3D04E01C42A0EB00C56AE5 /* tests.swift in Sources */,
 				7A1EDFC41C4701DF004506E2 /* add.swift in Sources */,
+				7A80C81B1C49541B00E74810 /* func_decl.swift in Sources */,
 				7A1EDFBE1C4701B3004506E2 /* greater_than.swift in Sources */,
 				7A1EDFCC1C4703C8004506E2 /* parse.swift in Sources */,
 				7A80C8131C47E19900E74810 /* bool_op.swift in Sources */,
@@ -258,6 +265,7 @@
 				7A1EDFB81C47018E004506E2 /* not.swift in Sources */,
 				7A1EDF9F1C46FF9E004506E2 /* algebraic_expr.swift in Sources */,
 				7A1EDFA41C470007004506E2 /* tokenize.swift in Sources */,
+				7A80C8191C49541400E74810 /* func_call.swift in Sources */,
 				7A80C80F1C47E00400E74810 /* algebraic_op.swift in Sources */,
 				7A80C8111C47E12200E74810 /* relational_op.swift in Sources */,
 				7A1EDF9A1C46FF50004506E2 /* assign.swift in Sources */,
