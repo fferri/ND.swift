@@ -13,7 +13,7 @@ public class Print : Program, CustomStringConvertible {
     }
     
     public override func final(s: State) -> Bool {
-        return true
+        return false
     }
     
     override class func parse(ts: TokenStream) -> Program? {
