@@ -1,6 +1,6 @@
 import Foundation
 
-public class Var : AlgebraicExpr, CustomStringConvertible {
+public class Var : AlgebraicExpr {
     var name: String = ""
     
     init(_ n: String) {
@@ -34,7 +34,7 @@ public class Var : AlgebraicExpr, CustomStringConvertible {
         return nil
     }
     
-    public var description: String {
+    public override var description: String {
         return "\(name)"
     }
 }

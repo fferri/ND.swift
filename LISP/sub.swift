@@ -1,6 +1,6 @@
 import Foundation
 
-public class Sub : AlgebraicExpr, CustomStringConvertible {
+public class Sub : AlgebraicExpr {
     let a, b: AlgebraicExpr
     
     init(_ a: AlgebraicExpr, _ b: AlgebraicExpr) {
@@ -21,7 +21,7 @@ public class Sub : AlgebraicExpr, CustomStringConvertible {
         return e
     }
     
-    public var description: String {
+    public override var description: String {
         return "(- \(a) \(b))"
     }
 }

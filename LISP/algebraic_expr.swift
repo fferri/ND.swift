@@ -1,6 +1,6 @@
 import Foundation
 
-public class AlgebraicExpr {
+public class AlgebraicExpr : CustomStringConvertible {
     public func eval(s: State) -> Int {
         fatalError()
     }
@@ -13,6 +13,10 @@ public class AlgebraicExpr {
         if let x = Mul.parse(ts) {return x}
         if let x = Div.parse(ts) {return x}
         return nil
+    }
+    
+    public var description: String {
+        return "<expr>"
     }
 }
 

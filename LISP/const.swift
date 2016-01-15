@@ -1,6 +1,6 @@
 import Foundation
 
-public class Const : AlgebraicExpr, CustomStringConvertible {
+public class Const : AlgebraicExpr {
     var value: Int = 0
     
     init(_ v: Int) {
@@ -29,7 +29,7 @@ public class Const : AlgebraicExpr, CustomStringConvertible {
         return nil
     }
     
-    public var description: String {
+    public override var description: String {
         return "\(value)"
     }
 }
