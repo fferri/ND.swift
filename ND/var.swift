@@ -15,22 +15,15 @@ public class Var : AlgebraicExpr {
             fatalError("no such variable: \(name)")
         }
     }
-
-    class func readStringAtom(ts: TokenStream) -> String? {
-        let oldpos = ts.pos
-        let abort = {() -> String? in ts.pos = oldpos; return nil}
-        if let t = ts.read() {
-            if t.isSymbol {
-                return t.value
-            }
-        }
-        return abort()
-    }
     
     override class func parse(ts: TokenStream) -> AlgebraicExpr? {
-        if let s = readStringAtom(ts) {
-            return Var(s)
+        let oldpos = ts.pos
+        parse: do {
+            guard let namet = ts.read() where namet.isSymbol else {break parse}
+            let name = namet.value
+            return Var(name)
         }
+        ts.pos = oldpos
         return nil
     }
     

@@ -32,7 +32,8 @@ public class Domain : Program, CustomStringConvertible {
         parse: do {
             guard let t1 = ts.read() where t1.value == "(" else {break parse}
             guard let t2 = ts.read() where t2.value == "domain" else {break parse}
-            guard let name = Var.readStringAtom(ts) else {break parse}
+            guard let namet = ts.read() where namet.isSymbol else {break parse}
+            let name = namet.value
             var values = [AlgebraicExpr]()
             while let value = AlgebraicExpr.parse(ts) {
                 values.append(value)

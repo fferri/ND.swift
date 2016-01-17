@@ -10,24 +10,16 @@ public class Const : AlgebraicExpr {
     public override func eval(s: State) -> Int {
         return value
     }
-
-    class func readIntAtom(ts: TokenStream) -> Int? {
-        let oldpos = ts.pos
-        let abort = {() -> Int? in ts.pos = oldpos; return nil}
-        if let t = ts.read() {
-            if let i = Int(t.value) {
-                return i
-            }
-        }
-        return abort()
-    }
     
     override class func parse(ts: TokenStream) -> AlgebraicExpr? {
-        if let i = readIntAtom(ts) {
-            return Const(i)
+        let oldpos = ts.pos
+        parse: do {
+            guard let valuet = ts.read() where valuet.isNumber else {break parse}
+            let value = Int(valuet.value)!
+            return Const(value)
         }
-        return nil
-    }
+        ts.pos = oldpos
+        return nil    }
     
     public override var description: String {
         return "\(value)"
