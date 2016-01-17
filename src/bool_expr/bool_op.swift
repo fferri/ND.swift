@@ -7,14 +7,18 @@ public class BoolOp : BoolExpr {
     
     class func parse(ts: TokenStream, op: String) -> [BoolExpr]? {
         let oldpos = ts.pos
-        let abort = {() -> [BoolExpr]? in ts.pos = oldpos; return nil}
-        guard let t1 = ts.read() where t1.value == "(" else {return abort()}
-        guard let t2 = ts.read() where t2.value == op else {return abort()}
-        var e = [BoolExpr]()
-        while let en = BoolExpr.parse(ts) {
-            e.append(en)
+        parse: do {
+            guard let t1 = ts.read() where t1.value == "(" else {break parse}
+            guard let t2 = ts.read() where t2.value == op else {break parse}
+            var e = [BoolExpr]()
+            while let en = BoolExpr.parse(ts) {
+                e.append(en)
+            }
+            guard let t3 = ts.read() where t3.value == ")" else {break parse}
+            if e.count < 2 {break parse}
+            return e
         }
-        guard let t3 = ts.read() where t3.value == ")" else {return abort()}
-        return e.count >= 2 ? e : abort()
+        ts.pos = oldpos
+        return nil
     }
 }

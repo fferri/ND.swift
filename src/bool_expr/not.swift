@@ -13,12 +13,15 @@ public class Not : BoolExpr, CustomStringConvertible {
 
     override class func parse(ts: TokenStream) -> BoolExpr? {
         let oldpos = ts.pos
-        let abort = {() -> BoolExpr? in ts.pos = oldpos; return nil}
-        guard let t1 = ts.read() where t1.value == "(" else {return abort()}
-        guard let t2 = ts.read() where t2.value == "not" else {return abort()}
-        guard let e1 = BoolExpr.parse(ts) else {return abort()}
-        guard let t3 = ts.read() where t3.value == ")" else {return abort()}
-        return Not(e1)
+        parse: do {
+            guard let t1 = ts.read() where t1.value == "(" else {break parse}
+            guard let t2 = ts.read() where t2.value == "not" else {break parse}
+            guard let e1 = BoolExpr.parse(ts) else {break parse}
+            guard let t3 = ts.read() where t3.value == ")" else {break parse}
+            return Not(e1)
+        }
+        ts.pos = oldpos
+        return nil
     }
     
     public var description: String {
