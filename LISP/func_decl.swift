@@ -41,10 +41,6 @@ public class FuncDecl : Program, CustomStringConvertible {
     }
     
     public var description: String {
-        var argsStr = ""
-        for arg in args {
-            argsStr += (argsStr == "" ? "" : " ") + arg
-        }
-        return "(def \(name) (\(argsStr)) \(body))"
+        return "(def \(name) (\(args.map{String($0)}.joinWithSeparator(" "))) \(body))"
     }
 }

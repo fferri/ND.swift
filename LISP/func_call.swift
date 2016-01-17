@@ -40,10 +40,6 @@ public class FuncCall : Program, CustomStringConvertible {
     }
     
     public var description: String {
-        var argsStr = ""
-        for arg in args {
-            argsStr += (argsStr == "" ? "" : " ") + arg.description
-        }
-        return "(\(name) \(argsStr))"
+        return "(\(name) \(args.map{String($0)}.joinWithSeparator(" ")))"
     }
 }
