@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "7A3D04CE1C418A0D00C56AE5"
-               BuildableName = "LISP"
-               BlueprintName = "LISP"
-               ReferencedContainer = "container:LISP.xcodeproj">
+               BuildableName = "ND"
+               BlueprintName = "ND"
+               ReferencedContainer = "container:ND.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "7A3D04CE1C418A0D00C56AE5"
-            BuildableName = "LISP"
-            BlueprintName = "LISP"
-            ReferencedContainer = "container:LISP.xcodeproj">
+            BuildableName = "ND"
+            BlueprintName = "ND"
+            ReferencedContainer = "container:ND.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -56,9 +56,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "7A3D04CE1C418A0D00C56AE5"
-            BuildableName = "LISP"
-            BlueprintName = "LISP"
-            ReferencedContainer = "container:LISP.xcodeproj">
+            BuildableName = "ND"
+            BlueprintName = "ND"
+            ReferencedContainer = "container:ND.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -75,9 +75,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "7A3D04CE1C418A0D00C56AE5"
-            BuildableName = "LISP"
-            BlueprintName = "LISP"
-            ReferencedContainer = "container:LISP.xcodeproj">
+            BuildableName = "ND"
+            BlueprintName = "ND"
+            ReferencedContainer = "container:ND.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
