@@ -9,8 +9,11 @@ public class Assert : Program, CustomStringConvertible {
     
     public override func trans(s: State) -> AnyGenerator<(Program, State)> {
         if cond.eval(s) {
+            var r: (Program, State)? = (Empty(), s)
             return anyGenerator{
-                return (Empty(), s)
+                let r1 = r
+                r = nil
+                return r1
             }
         } else {
             return anyGenerator{

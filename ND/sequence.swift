@@ -10,12 +10,12 @@ public class Sequence : Program, CustomStringConvertible {
     
     public override func trans(s: State) -> AnyGenerator<(Program, State)> {
         if p1.final(s) {
-            let g2 = p2.trans(s)
+            let g2 = p2.trans(s).generate()
             return anyGenerator{
                 return g2.next()
             }
         }
-        let g1 = p1.trans(s)
+        let g1 = p1.trans(s).generate()
         return anyGenerator{
             if let (p1, s1) = g1.next() {
                 return (Sequence(p1, self.p2), s1)

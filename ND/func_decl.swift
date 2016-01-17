@@ -12,10 +12,13 @@ public class FuncDecl : Program, CustomStringConvertible {
     }
     
     public override func trans(s: State) -> AnyGenerator<(Program, State)> {
+        var s1 = s
+        s1.funcs[self.name] = self
+        var r: (Program, State)? = (Empty(), s1)
         return anyGenerator{
-            var s1 = s
-            s1.funcs[self.name] = self
-            return (Empty(), s1)
+            let r1 = r
+            r = nil
+            return r1
         }
     }
     
