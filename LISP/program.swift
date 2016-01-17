@@ -28,6 +28,8 @@ public class Program {
         if let x = If.parse(ts) {return x}
         if let x = While.parse(ts) {return x}
         if let x = Print.parse(ts) {return x}
+        if let x = Domain.parse(ts) {return x}
+        if let x = Assert.parse(ts) {return x}
         if let x = FuncDecl.parse(ts) {return x}
         if let x = FuncCall.parse(ts) {return x}
         return nil
