@@ -11,7 +11,7 @@ public class Program {
         return false
     }
     
-    public func exec(s: State) -> State? {
+    public func exec(s: State = State()) -> State? {
         if final(s) {return s}
         let g = trans(s).generate()
         for (p1, s1) in g {
