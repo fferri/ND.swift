@@ -9,12 +9,21 @@ public class While : Program, CustomStringConvertible {
         self.body = body
     }
     
-    public override func trans(s: State) -> (Program, State)? {
+    public override func trans(s: State) -> AnyGenerator<(Program, State)> {
         if cond.eval(s) {
-            let (p11, s1) = body.trans(s)!
-            return (Sequence(p11, self), s1)
+            let g = body.trans(s).generate()
+            return anyGenerator{
+                if let (p1, s1) = g.next() {
+                    return (Sequence(p1, self), s1)
+                } else {
+                    return nil
+                }
+            }
+        } else {
+            return anyGenerator{
+                return (Empty(), s)
+            }
         }
-        return nil
     }
     
     public override func final(s: State) -> Bool {

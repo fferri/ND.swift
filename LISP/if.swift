@@ -9,11 +9,16 @@ public class If : Program, CustomStringConvertible {
         self.body = body
     }
     
-    public override func trans(s: State) -> (Program, State)? {
+    public override func trans(s: State) -> AnyGenerator<(Program, State)> {
         if cond.eval(s) {
-            return body.trans(s)!
+            let g = body.trans(s).generate()
+            return anyGenerator{
+                return g.next()
+            }
         } else {
-            return (Empty(), s)
+            return anyGenerator{
+                return (Empty(), s)
+            }
         }
     }
     

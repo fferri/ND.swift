@@ -10,12 +10,14 @@ func runTokenizerTest(program: String, _ positions: [[Int]]) {
 }
 
 func runTest(s0: State, _ program: String, test: (State -> Bool)) {
-    if let p: Program = parse(program) {
-        if !test(p.exec(s0)) {
-            fatalError("test failed for \(program) (failed condition)")
-        }
-    } else {
-        fatalError("test failed for \(program) (parse error)")
+    guard let p: Program = parse(program) else {
+        fatalError("syntax error")
+    }
+    guard let s = p.exec(s0) else {
+        fatalError("program has no valid runs")
+    }
+    if !test(s) {
+        fatalError("test failed for \(program)")
     }
 }
 

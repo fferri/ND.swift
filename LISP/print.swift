@@ -7,9 +7,11 @@ public class Print : Program, CustomStringConvertible {
         self.value = value
     }
     
-    public override func trans(s: State) -> (Program, State)? {
-        print(value.eval(s))
-        return (Empty(), s)
+    public override func trans(s: State) -> AnyGenerator<(Program, State)> {
+        return anyGenerator{
+            print(self.value.eval(s))
+            return (Empty(), s)
+        }
     }
     
     public override func final(s: State) -> Bool {

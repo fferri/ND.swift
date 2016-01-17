@@ -9,10 +9,12 @@ public class Assign : Program, CustomStringConvertible {
         self.value = value
     }
     
-    public override func trans(s: State) -> (Program, State)? {
-        var s1 = s
-        s1[name] = value.eval(s)
-        return (Empty(), s1)
+    public override func trans(s: State) -> AnyGenerator<(Program, State)> {
+        return anyGenerator{
+            var s1 = s
+            s1[self.name] = self.value.eval(s)
+            return (Empty(), s1)
+        }
     }
     
     public override func final(s: State) -> Bool {

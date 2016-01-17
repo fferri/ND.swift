@@ -1,18 +1,25 @@
 import Foundation
 
 public class Program {
-    func trans(s: State) -> (Program, State)? /* AnyGenerator<(Program, State)> */ {
-        return nil
+    func trans(s: State) -> AnyGenerator<(Program, State)> {
+        return anyGenerator{
+            return nil
+        }
     }
     
     func final(s: State) -> Bool {
         return false
     }
     
-    public func exec(s: State) -> State {
+    public func exec(s: State) -> State? {
         if final(s) {return s}
-        let (p1, s1) = trans(s)!
-        return p1.exec(s1)
+        let g = trans(s).generate()
+        for (p1, s1) in g {
+            if let s2 = p1.exec(s1) {
+                return s2
+            }
+        }
+        return nil
     }
     
     class func parse(ts: TokenStream) -> Program? {
