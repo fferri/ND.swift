@@ -41,5 +41,9 @@ func runTests() {
     runTest(State(["x": 3]), "(if (> x 4) (set x 1))"){$0["x"] == 3}
     runTokenizerTest("(set  x 1)\n(set y 2)", [[1,1],[1,2],[1,7],[1,9],[1,10],[2,1],[2,2],[2,6],[2,8],[2,9]])
     runTest("((domain x 1 2 3) (assert (= 4 (+ 2 x))))"){$0["x"] == 2}
+    runTest("((choose (set x 1) (set x 2)) (assert (= x 2)) (set y 2))"){$0["x"] == 2 && $0["y"] == 2}
+    runTest("((choose (set x 1) (set x 2)) (set y 2))"){$0["x"] == 1 && $0["y"] == 2}
+    runTest("((set x 1) (repeat (set x (+ x 1))) (assert (= x 4)))"){$0["x"] == 4}
+    runTest("((set x 1) (repeat (set x (+ x 1))) (assert (= x 1)))"){$0["x"] == 1}
     print("all tests passed successfully")
 }
