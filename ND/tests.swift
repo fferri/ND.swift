@@ -30,7 +30,7 @@ func runTest(p: String) {
 }
 
 func runTests() {
-    runTest("((def printDouble (x) ((set y (* 2 x)) (print y))) (printDouble 2))")
+    //runTest("((def printDouble (x) ((set y (* 2 x)) (print y))) (printDouble 2))")
     runTest("(set x 1)"){$0["x"] == 1}
     runTest("((set x 5) (set y 4) (set z 0)" +
         "(while (> y 0) ((set z (+ x z)) (set y (- y 1)))))"){$0["z"] == 20}
@@ -45,5 +45,6 @@ func runTests() {
     runTest("((choose (set x 1) (set x 2)) (set y 2))"){$0["x"] == 1 && $0["y"] == 2}
     runTest("((set x 1) (repeat (set x (+ x 1))) (assert (= x 4)))"){$0["x"] == 4}
     runTest("((set x 1) (repeat (set x (+ x 1))) (assert (= x 1)))"){$0["x"] == 1}
+    runTest("((set x 0) (set y 0) (repeat (choose ((set x (+ x 1)) (assert (< x 4))) (set y (+ y 1)))) (assert (= (* x y) 21)))"){$0["x"] == 3 && $0["y"] == 7}
     print("all tests passed successfully")
 }
