@@ -31,16 +31,19 @@ public class Sequence : Program, CustomStringConvertible {
 
     override class func parse(ts: TokenStream) -> Program? {
         let oldpos = ts.pos
-        let abort = {() -> Program? in ts.pos = oldpos; return nil}
-        guard let t1 = ts.read() where t1.value == "(" else {return abort()}
-        guard let p1 = Program.parse(ts) else {return abort()}
-        guard let p2 = Program.parse(ts) else {return abort()}
-        var p = Sequence(p1, p2)
-        while let pn = Program.parse(ts) {
-            p = Sequence(p, pn)
+        parse: do {
+            guard let t1 = ts.read() where t1.value == "(" else {break parse}
+            guard let p1 = Program.parse(ts) else {break parse}
+            guard let p2 = Program.parse(ts) else {break parse}
+            var p = Sequence(p1, p2)
+            while let pn = Program.parse(ts) {
+                p = Sequence(p, pn)
+            }
+            guard let t3 = ts.read() where t3.value == ")" else {break parse}
+            return p
         }
-        guard let t3 = ts.read() where t3.value == ")" else {return abort()}
-        return p
+        ts.pos = oldpos
+        return nil
     }
 
     public var description: String {

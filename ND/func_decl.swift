@@ -25,21 +25,24 @@ public class FuncDecl : Program, CustomStringConvertible {
     
     override class func parse(ts: TokenStream) -> Program? {
         let oldpos = ts.pos
-        let abort = {() -> Program? in ts.pos = oldpos; return nil}
-        guard let t1 = ts.read() where t1.value == "(" else {return abort()}
-        guard let t2 = ts.read() where t2.value == "def" else {return abort()}
-        guard let namet = ts.read() where namet.isSymbol else {return abort()}
-        let name = namet.value
-        guard let t3 = ts.read() where t3.value == "(" else {return abort()}
-        var args = [String]()
-        while let argt = ts.read() where argt.isSymbol {
-            args.append(argt.value)
+        parse: do {
+            guard let t1 = ts.read() where t1.value == "(" else {break parse}
+            guard let t2 = ts.read() where t2.value == "def" else {break parse}
+            guard let namet = ts.read() where namet.isSymbol else {break parse}
+            let name = namet.value
+            guard let t3 = ts.read() where t3.value == "(" else {break parse}
+            var args = [String]()
+            while let argt = ts.read() where argt.isSymbol {
+                args.append(argt.value)
+            }
+            ts.pos -= 1
+            guard let t4 = ts.read() where t4.value == ")" else {break parse}
+            guard let body = Program.parse(ts) else {break parse}
+            guard let t5 = ts.read() where t5.value == ")" else {break parse}
+            return FuncDecl(name, args, body)
         }
-        ts.pos -= 1
-        guard let t4 = ts.read() where t4.value == ")" else {return abort()}
-        guard let body = Program.parse(ts) else {return abort()}
-        guard let t5 = ts.read() where t5.value == ")" else {return abort()}
-        return FuncDecl(name, args, body)
+        ts.pos = oldpos
+        return nil
     }
     
     public var description: String {
