@@ -150,6 +150,8 @@ Find `x` and `y` such that their product is `21`, that is `(= 21 (* x y))`:
 )
 ```
 
+Check `src/tests.swift` for more.
+
 &nbsp;
 
 ## TODO
