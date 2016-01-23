@@ -134,7 +134,21 @@ Mathematical operators. Can be used with more than two arguments, like `(+ e1 e2
 
 ## Examples
 
-TODO
+Find `x` and `y` such that their product is `21`, that is `(= 21 (* x y))`:
+
+```
+(
+    (set x 1)
+    (set y 1)
+    (repeat
+        (choose
+            ((set x (+ x 1)) (assert (< x 10)))
+            ((set y (+ y 1)) (assert (< y 10)))
+        )
+    )
+    (assert (= (* x y) 21))
+)
+```
 
 &nbsp;
 
