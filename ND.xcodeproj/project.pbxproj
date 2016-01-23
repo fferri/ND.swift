@@ -44,6 +44,7 @@
 		7AFC07381C53A22E00C839DD /* tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AFC07351C53A22E00C839DD /* tests.swift */; };
 		7AFC07391C53A22E00C839DD /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AFC07361C53A22E00C839DD /* main.swift */; };
 		7AFC073A1C53A22E00C839DD /* state.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AFC07371C53A22E00C839DD /* state.swift */; };
+		7AFC073C1C53D82000C839DD /* generator_utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AFC073B1C53D82000C839DD /* generator_utils.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -97,6 +98,7 @@
 		7AFC07351C53A22E00C839DD /* tests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = tests.swift; path = src/tests.swift; sourceTree = "<group>"; };
 		7AFC07361C53A22E00C839DD /* main.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = main.swift; path = src/main.swift; sourceTree = "<group>"; };
 		7AFC07371C53A22E00C839DD /* state.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = state.swift; path = src/state.swift; sourceTree = "<group>"; };
+		7AFC073B1C53D82000C839DD /* generator_utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = generator_utils.swift; path = src/generator_utils.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -136,6 +138,7 @@
 				7AFC07351C53A22E00C839DD /* tests.swift */,
 				7AFC07361C53A22E00C839DD /* main.swift */,
 				7AFC07371C53A22E00C839DD /* state.swift */,
+				7AFC073B1C53D82000C839DD /* generator_utils.swift */,
 			);
 			name = src;
 			sourceTree = "<group>";
@@ -282,6 +285,7 @@
 				7AFC07331C53A22300C839DD /* sequence.swift in Sources */,
 				7AFC07311C53A22300C839DD /* program.swift in Sources */,
 				7AFC073A1C53A22E00C839DD /* state.swift in Sources */,
+				7AFC073C1C53D82000C839DD /* generator_utils.swift in Sources */,
 				7AFC07191C53A21700C839DD /* or.swift in Sources */,
 				7AFC072E1C53A22300C839DD /* func_decl.swift in Sources */,
 				7AFC072B1C53A22300C839DD /* domain.swift in Sources */,

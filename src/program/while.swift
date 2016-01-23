@@ -20,11 +20,8 @@ public class While : Program, CustomStringConvertible {
                 }
             }
         } else {
-            var r: (Program, State)? = (Empty(), s)
-            return anyGenerator{
-                let r1 = r
-                r = nil
-                return r1
+            return generateOnce{
+                return (Empty(), s)
             }
         }
     }

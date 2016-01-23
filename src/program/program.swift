@@ -2,9 +2,7 @@ import Foundation
 
 public class Program {
     func trans(s: State) -> AnyGenerator<(Program, State)> {
-        return anyGenerator{
-            return nil
-        }
+        return emptyGenerator()
     }
     
     func final(s: State) -> Bool {

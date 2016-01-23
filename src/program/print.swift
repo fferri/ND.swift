@@ -8,12 +8,9 @@ public class Print : Program, CustomStringConvertible {
     }
     
     public override func trans(s: State) -> AnyGenerator<(Program, State)> {
-        var r: (Program, State)? = (Empty(), s)
-        return anyGenerator{
-            let r1 = r
-            r = nil
+        return generateOnce{
             print(self.value.eval(s))
-            return r1
+            return (Empty(), s)
         }
     }
     
