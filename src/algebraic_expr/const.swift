@@ -19,7 +19,8 @@ public class Const : AlgebraicExpr {
             return Const(value)
         }
         ts.pos = oldpos
-        return nil    }
+        return nil
+    }
     
     public override var description: String {
         return "\(value)"
