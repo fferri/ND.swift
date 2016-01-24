@@ -2,9 +2,9 @@ import Foundation
 
 public class Assign : Program, CustomStringConvertible {
     let name: String
-    let value: AlgebraicExpr
+    let value: Expr
     
-    init(_ name: String, _ value: AlgebraicExpr) {
+    init(_ name: String, _ value: Expr) {
         self.name = name
         self.value = value
     }
@@ -28,7 +28,7 @@ public class Assign : Program, CustomStringConvertible {
             guard let t2 = ts.read() where t2.value == "set" else {break parse}
             guard let namet = ts.read() where namet.isSymbol else {break parse}
             let name = namet.value
-            guard let value = AlgebraicExpr.parse(ts) else {break parse}
+            guard let value = Expr.parse(ts) else {break parse}
             guard let t3 = ts.read() where t3.value == ")" else {break parse}
             return Assign(name, value)
         }

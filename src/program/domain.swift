@@ -2,9 +2,9 @@ import Foundation
 
 public class Domain : Program, CustomStringConvertible {
     let name: String
-    let values: [AlgebraicExpr]
+    let values: [Expr]
     
-    init(_ name: String, _ values: [AlgebraicExpr]) {
+    init(_ name: String, _ values: [Expr]) {
         self.name = name
         self.values = values
     }
@@ -34,8 +34,8 @@ public class Domain : Program, CustomStringConvertible {
             guard let t2 = ts.read() where t2.value == "domain" else {break parse}
             guard let namet = ts.read() where namet.isSymbol else {break parse}
             let name = namet.value
-            var values = [AlgebraicExpr]()
-            while let value = AlgebraicExpr.parse(ts) {
+            var values = [Expr]()
+            while let value = Expr.parse(ts) {
                 values.append(value)
             }
             guard let t3 = ts.read() where t3.value == ")" else {break parse}

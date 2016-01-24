@@ -1,14 +1,14 @@
 import Foundation
 
 public class Assert : Program, CustomStringConvertible {
-    let cond: BoolExpr
+    let cond: Expr
     
-    init(_ cond: BoolExpr) {
+    init(_ cond: Expr) {
         self.cond = cond
     }
     
     public override func trans(s: State) -> AnyGenerator<(Program, State)> {
-        if cond.eval(s) {
+        if cond.eval(s).asBool {
             return generateOnce{
                 return (Empty(), s)
             }
@@ -26,7 +26,7 @@ public class Assert : Program, CustomStringConvertible {
         parse: do {
             guard let t1 = ts.read() where t1.value == "(" else {break parse}
             guard let t2 = ts.read() where t2.value == "assert" else {break parse}
-            guard let cond = BoolExpr.parse(ts) else {break parse}
+            guard let cond = Expr.parse(ts) else {break parse}
             guard let t3 = ts.read() where t3.value == ")" else {break parse}
             return Assert(cond)
         }

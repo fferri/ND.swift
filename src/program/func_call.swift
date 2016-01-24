@@ -2,9 +2,9 @@ import Foundation
 
 public class FuncCall : Program, CustomStringConvertible {
     let name: String
-    let args: [AlgebraicExpr]
+    let args: [Expr]
     
-    init(_ name: String, _ args: [AlgebraicExpr]) {
+    init(_ name: String, _ args: [Expr]) {
         self.name = name
         self.args = args
     }
@@ -34,8 +34,8 @@ public class FuncCall : Program, CustomStringConvertible {
             guard let t1 = ts.read() where t1.value == "(" else {break parse}
             guard let namet = ts.read() where namet.isSymbol else {break parse}
             let name = namet.value
-            var args = [AlgebraicExpr]()
-            while let expr = AlgebraicExpr.parse(ts) {
+            var args = [Expr]()
+            while let expr = Expr.parse(ts) {
                 args.append(expr)
             }
             guard let t3 = ts.read() where t3.value == ")" else {break parse}

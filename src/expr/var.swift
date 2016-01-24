@@ -1,6 +1,6 @@
 import Foundation
 
-public class Var : AlgebraicExpr {
+public class Var : Expr {
     var name: String = ""
     
     init(_ n: String) {
@@ -8,7 +8,7 @@ public class Var : AlgebraicExpr {
         super.init()
     }
     
-    public override func eval(s: State) -> Int {
+    public override func eval(s: State) -> Value {
         if let v = s[name] {
             return v
         } else {
@@ -16,7 +16,7 @@ public class Var : AlgebraicExpr {
         }
     }
     
-    override class func parse(ts: TokenStream) -> AlgebraicExpr? {
+    override class func parse(ts: TokenStream) -> Expr? {
         let oldpos = ts.pos
         parse: do {
             guard let namet = ts.read() where namet.isSymbol else {break parse}

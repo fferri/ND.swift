@@ -1,17 +1,23 @@
 import Foundation
 
-public class AlgebraicExpr : CustomStringConvertible {
-    public func eval(s: State) -> Int {
+public class Expr : CustomStringConvertible {
+    public func eval(s: State) -> Value {
         fatalError()
     }
     
-    class func parse(ts: TokenStream) -> AlgebraicExpr? {
+    class func parse(ts: TokenStream) -> Expr? {
         if let x = Const.parse(ts) {return x}
         if let x = Var.parse(ts) {return x}
         if let x = Add.parse(ts) {return x}
         if let x = Sub.parse(ts) {return x}
         if let x = Mul.parse(ts) {return x}
         if let x = Div.parse(ts) {return x}
+        if let x = And.parse(ts) {return x}
+        if let x = Or.parse(ts) {return x}
+        if let x = Not.parse(ts) {return x}
+        if let x = LessThan.parse(ts) {return x}
+        if let x = Equal.parse(ts) {return x}
+        if let x = GreaterThan.parse(ts) {return x}
         return nil
     }
     

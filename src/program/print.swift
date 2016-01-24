@@ -1,9 +1,9 @@
 import Foundation
 
 public class Print : Program, CustomStringConvertible {
-    let value: AlgebraicExpr
+    let value: Expr
     
-    init(_ value: AlgebraicExpr) {
+    init(_ value: Expr) {
         self.value = value
     }
     
@@ -23,7 +23,7 @@ public class Print : Program, CustomStringConvertible {
         parse: do {
             guard let t1 = ts.read() where t1.value == "(" else {break parse}
             guard let t2 = ts.read() where t2.value == "print" else {break parse}
-            guard let value = AlgebraicExpr.parse(ts) else {break parse}
+            guard let value = Expr.parse(ts) else {break parse}
             guard let t3 = ts.read() where t3.value == ")" else {break parse}
             return Print(value)
         }
