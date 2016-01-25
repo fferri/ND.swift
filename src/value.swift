@@ -68,6 +68,11 @@ public indirect enum ListValue : CustomStringConvertible {
     case Nil
     case Node(Value, ListValue)
     
+    public static func fromArray(v: [Value], startIndex: Int = 0) -> ListValue {
+        if startIndex >= v.count {return .Nil}
+        return .Node(v[startIndex], fromArray(v, startIndex: startIndex + 1))
+    }
+    
     public var toArray: [Value] {
         switch(self) {
         case .Nil: return []

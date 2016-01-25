@@ -8,11 +8,7 @@ public class List : Expr {
     }
     
     public override func eval(s: State) -> Value {
-        var r = ListValue.Nil
-        for i in 0..<e.count {
-            r = ListValue.Node(e[e.count - i - 1].eval(s), r)
-        }
-        return Value.List(r)
+        return Value.List(ListValue.fromArray(e.map{$0.eval(s)}))
     }
     
     override class func parse(ts: TokenStream) -> Expr? {
