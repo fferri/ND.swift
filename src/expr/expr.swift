@@ -18,6 +18,9 @@ public class Expr : CustomStringConvertible {
         if let x = LessThan.parse(ts) {return x}
         if let x = Equal.parse(ts) {return x}
         if let x = GreaterThan.parse(ts) {return x}
+        if let x = Head.parse(ts) {return x}
+        if let x = Tail.parse(ts) {return x}
+        if let x = List.parse(ts) {return x} // must try this as last
         return nil
     }
     
