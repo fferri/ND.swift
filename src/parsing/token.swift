@@ -9,6 +9,7 @@ struct Position : CustomStringConvertible {
 struct Token : CustomStringConvertible {
     var value = ""
     var position = Position()
+    var string = false
     var length: Int {return value.characters.count}
     var description: String {return "\"\(value)\" at \(position)"}
     var isInteger: Bool {
@@ -18,7 +19,7 @@ struct Token : CustomStringConvertible {
         if let _ = Double(value) {return true} else {return false}
     }
     var isString: Bool {
-        return value.characters[value.startIndex] == "\"" && value.characters[value.endIndex.predecessor()] == "\""
+        return string
     }
     var isSpecial: Bool {
         return value == "(" || value == ")"

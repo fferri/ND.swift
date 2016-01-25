@@ -59,7 +59,7 @@ public class Const : Expr {
         parse: do {
             guard let valuet = ts.read() where valuet.isString else {break parse}
             let s = valuet.value
-            return .Str(s.substringWithRange(s.startIndex.successor()..<s.endIndex.predecessor()))
+            return .Str(s)
         }
         ts.pos = oldpos
         return nil

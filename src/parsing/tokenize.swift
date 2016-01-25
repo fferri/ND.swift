@@ -20,12 +20,13 @@ func tokenize(s: String) -> [Token] {
             token.position = pos
             token.position.column += 1
             if c == "(" || c == ")" {
-                tokens.append(Token(value: String(c), position: pos))
+                tokens.append(Token(value: String(c), position: pos, string: false))
             }
         } else if str && c == "\\" {
             esc = true
         } else if c == "\"" {
             str = !str
+            token.string = true
         } else {
             token.value.append(c)
         }

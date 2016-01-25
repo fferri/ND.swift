@@ -14,10 +14,10 @@ func runTest(s0: State, _ program: String, test: (State -> Bool)) {
         fatalError("syntax error")
     }
     guard let s = p.exec(s0) else {
-        fatalError("program has no valid runs")
+        fatalError("program has no valid runs: \(p)")
     }
     if !test(s) {
-        fatalError("test failed for \(program)")
+        fatalError("test failed for \(p)")
     }
 }
 
@@ -92,6 +92,8 @@ func runTests() {
     runTest("( (set x 3.14) (set y (* 2 x)) )") {
         $0["y"]?.asDouble == 6.28
     }
+    
+    runTest("((assert (or true false)) (assert (not (and true false))))")
     
     runTest("( (set s \"abc\") (set s1 (+ s \"d\")) )") {
         $0["s1"]?.asString == "abcd"
