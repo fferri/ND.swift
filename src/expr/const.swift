@@ -16,7 +16,6 @@ public class Const : Expr {
         if let x = parseIntLiteral(ts) {return Const(x)}
         if let x = parseDoubleLiteral(ts) {return Const(x)}
         if let x = parseStringLiteral(ts) {return Const(x)}
-        if let x = parseListLiteral(ts) {return Const(x)}
         return nil
     }
     
@@ -62,10 +61,6 @@ public class Const : Expr {
             return .Str(s)
         }
         ts.pos = oldpos
-        return nil
-    }
-    
-    class func parseListLiteral(ts: TokenStream) -> Value? {
         return nil
     }
     
