@@ -99,5 +99,17 @@ func runTests() {
         $0["s1"]?.asString == "abcd"
     }
     
+    runTest("(set x (head (1 2 3 4)))") {
+        $0["x"]?.asInt == 1
+    }
+    
+    runTest("(set x (tail (1 2 3 4)))") {
+        $0["x"]!.asList == ListValue.fromArray([2, 3, 4].map{Value.Integer($0)})
+    }
+    
+    runTest("((set x ((+ 1 1) (* 2 3) (/ 6 2))) (set y (head (tail x))))") {
+        $0["y"]?.asInt == 6
+    }
+    
     print("all tests passed successfully")
 }
