@@ -154,10 +154,3 @@ Check `src/tests.swift` for more.
 
 &nbsp;
 
-## TODO
-
-- [ ] Examples
-- [ ] Type system
-- [ ] Lists
-- [ ] more
-
