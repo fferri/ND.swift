@@ -111,5 +111,7 @@ func runTests() {
         $0["y"]?.asInt == 6
     }
     
+    runTest("(assert (= () (tail (tail (1 2)))))")
+    
     print("all tests passed successfully")
 }
