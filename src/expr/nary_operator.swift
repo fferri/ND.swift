@@ -5,7 +5,7 @@ public class NAryOperator : Expr {
         fatalError()
     }
     
-    class func parse(ts: TokenStream, op: String? = nil, minArity: Int? = nil, maxArity: Int? = nil) -> [Expr]? {
+    class func parse(ts: TokenStream, op: String?, minArity: Int? = nil, maxArity: Int? = nil) -> [Expr]? {
         let oldpos = ts.pos
         parse: do {
             guard let t1 = ts.read() where t1.value == "(" else {break parse}
