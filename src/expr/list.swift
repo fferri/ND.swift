@@ -12,7 +12,7 @@ public class List : Expr {
     }
     
     override class func parse(ts: TokenStream) -> Expr? {
-        guard let o = NAryOperator.parse(ts, op: nil, minArity: 1) else {return nil}
+        guard let o = NAryOperator.parse(ts, op: nil) else {return nil}
         return List(o)
     }
     
