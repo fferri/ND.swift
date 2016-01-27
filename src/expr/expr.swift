@@ -26,6 +26,6 @@ public class Expr : CustomStringConvertible {
     }
     
     public var description: String {
-        return "<expr>"
+        fatalError()
     }
 }
