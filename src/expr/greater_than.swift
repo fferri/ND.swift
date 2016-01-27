@@ -9,20 +9,7 @@ public class GreaterThan : Expr {
     }
     
     public override func eval(s: State) -> Value {
-        switch(a.eval(s), b.eval(s)) {
-        case let (.Integer(av), .Integer(bv)):
-            return .Boolean(av > bv)
-        case let (.Floating(av), .Floating(bv)):
-            return .Boolean(av > bv)
-        case let (.Floating(av), .Integer(bv)):
-            return .Boolean(av > Double(bv))
-        case let (.Integer(av), .Floating(bv)):
-            return .Boolean(Double(av) > bv)
-        case let (.Str(av), .Str(bv)):
-            return .Boolean(av > bv)
-        default:
-            fatalError("invalid operands \(a), \(b) for >")
-        }
+        return a.eval(s) > b.eval(s)
     }
 
     override class func parse(ts: TokenStream) -> Expr? {

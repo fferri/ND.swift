@@ -8,15 +8,7 @@ public class Head : Expr {
     }
     
     public override func eval(s: State) -> Value {
-        switch(l.eval(s)) {
-        case let (.List(v)):
-            switch(v) {
-            case .Nil: fatalError("cannot get head of empty list")
-            case let .Node(h, _): return h
-            }
-        default:
-            fatalError("invalid operand \(l) for head")
-        }
+        return head(l.eval(s))
     }
     
     override class func parse(ts: TokenStream) -> Expr? {

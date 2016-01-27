@@ -8,15 +8,7 @@ public class Tail : Expr {
     }
     
     public override func eval(s: State) -> Value {
-        switch(l.eval(s)) {
-        case let (.List(v)):
-            switch(v) {
-            case .Nil: fatalError("cannot get tail of empty list")
-            case let .Node(_, t): return .List(t)
-            }
-        default:
-            fatalError("invalid operand \(l) for tail")
-        }
+        return tail(l.eval(s))
     }
     
     override class func parse(ts: TokenStream) -> Expr? {

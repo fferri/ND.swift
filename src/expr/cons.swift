@@ -10,12 +10,7 @@ public class Cons : Expr {
     }
     
     public override func eval(s: State) -> Value {
-        switch(t.eval(s)) {
-        case let (.List(v)):
-            return .List(.Node(h.eval(s), v))
-        default:
-            fatalError("invalid 2nd operand \(t) for cons")
-        }
+        return cons(h.eval(s), t.eval(s))
     }
     
     override class func parse(ts: TokenStream) -> Expr? {

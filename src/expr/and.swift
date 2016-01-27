@@ -9,12 +9,7 @@ public class And : Expr {
     }
     
     public override func eval(s: State) -> Value {
-        switch(a.eval(s), b.eval(s)) {
-        case let (.Boolean(av), .Boolean(bv)):
-            return .Boolean(av && bv)
-        default:
-            fatalError("invalid operands \(a), \(b) for and")
-        }
+        return a.eval(s) && b.eval(s)
     }
 
     override class func parse(ts: TokenStream) -> Expr? {

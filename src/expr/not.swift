@@ -8,12 +8,7 @@ public class Not : Expr {
     }
     
     public override func eval(s: State) -> Value {
-        switch(e.eval(s)) {
-        case let .Boolean(ev):
-            return .Boolean(!ev)
-        default:
-            fatalError("invalid operand \(e) for not")
-        }
+        return !e.eval(s)
     }
 
     override class func parse(ts: TokenStream) -> Expr? {

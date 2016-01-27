@@ -28,3 +28,21 @@ func ==(lhs: ListValue, rhs: ListValue) -> Bool {
     default: fatalError("bad arguments to ==: \(lhs), \(rhs)")
     }
 }
+
+func head(l: ListValue) -> Value {
+    switch(l) {
+    case .Nil: fatalError("cannot get head of empty list")
+    case let .Node(h, _): return h
+    }
+}
+
+func tail(l: ListValue) -> ListValue {
+    switch(l) {
+    case .Nil: fatalError("cannot get tail of empty list")
+    case let .Node(_, t): return t
+    }
+}
+
+func cons(h: Value, _ t: ListValue) -> ListValue {
+    return .Node(h, t)
+}

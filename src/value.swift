@@ -63,3 +63,170 @@ func ==(lhs: Value, rhs: Value) -> Bool {
     default: fatalError("bad arguments to ==: \(lhs), \(rhs)")
     }
 }
+
+func +(lhs: Value, rhs: Value) -> Value {
+    switch(lhs, rhs) {
+    case let (.Integer(av), .Integer(bv)):
+        return .Integer(av + bv)
+    case let (.Floating(av), .Floating(bv)):
+        return .Floating(av + bv)
+    case let (.Floating(av), .Integer(bv)):
+        return .Floating(av + Double(bv))
+    case let (.Integer(av), .Floating(bv)):
+        return .Floating(Double(av) + bv)
+    case let (.Str(av), .Str(bv)):
+        return .Str(av + bv)
+    default:
+        fatalError("invalid operands \(lhs), \(rhs) for +")
+    }
+}
+
+func -(lhs: Value, rhs: Value) -> Value {
+    switch(lhs, rhs) {
+    case let (.Integer(av), .Integer(bv)):
+        return .Integer(av - bv)
+    case let (.Floating(av), .Floating(bv)):
+        return .Floating(av - bv)
+    case let (.Floating(av), .Integer(bv)):
+        return .Floating(av - Double(bv))
+    case let (.Integer(av), .Floating(bv)):
+        return .Floating(Double(av) - bv)
+    default:
+        fatalError("invalid operands \(lhs), \(rhs) for -")
+    }
+}
+
+func *(lhs: Value, rhs: Value) -> Value {
+    switch(lhs, rhs) {
+    case let (.Integer(av), .Integer(bv)):
+        return .Integer(av * bv)
+    case let (.Floating(av), .Floating(bv)):
+        return .Floating(av * bv)
+    case let (.Floating(av), .Integer(bv)):
+        return .Floating(av * Double(bv))
+    case let (.Integer(av), .Floating(bv)):
+        return .Floating(Double(av) * bv)
+    default:
+        fatalError("invalid operands \(lhs), \(rhs) for *")
+    }
+}
+
+func /(lhs: Value, rhs: Value) -> Value {
+    switch(lhs, rhs) {
+    case let (.Integer(av), .Integer(bv)):
+        return .Integer(av / bv)
+    case let (.Floating(av), .Floating(bv)):
+        return .Floating(av / bv)
+    case let (.Floating(av), .Integer(bv)):
+        return .Floating(av / Double(bv))
+    case let (.Integer(av), .Floating(bv)):
+        return .Floating(Double(av) / bv)
+    default:
+        fatalError("invalid operands \(lhs), \(rhs) for /")
+    }
+}
+
+func ==(lhs: Value, rhs: Value) -> Value {
+    switch(lhs, rhs) {
+    case let (.Boolean(av), .Boolean(bv)):
+        return .Boolean(av == bv)
+    case let (.Integer(av), .Integer(bv)):
+        return .Boolean(av == bv)
+    case let (.Floating(av), .Floating(bv)):
+        return .Boolean(av == bv)
+    case let (.Str(av), .Str(bv)):
+        return .Boolean(av == bv)
+    case let (.List(av), .List(bv)):
+        return .Boolean(av == bv)
+    default:
+        fatalError("invalid operands \(lhs), \(rhs) for =")
+    }
+}
+
+func >(lhs: Value, rhs: Value) -> Value {
+    switch(lhs, rhs) {
+    case let (.Integer(av), .Integer(bv)):
+        return .Boolean(av > bv)
+    case let (.Floating(av), .Floating(bv)):
+        return .Boolean(av > bv)
+    case let (.Floating(av), .Integer(bv)):
+        return .Boolean(av > Double(bv))
+    case let (.Integer(av), .Floating(bv)):
+        return .Boolean(Double(av) > bv)
+    case let (.Str(av), .Str(bv)):
+        return .Boolean(av > bv)
+    default:
+        fatalError("invalid operands \(lhs), \(rhs) for >")
+    }
+}
+
+func <(lhs: Value, rhs: Value) -> Value {
+    switch(lhs, rhs) {
+    case let (.Integer(av), .Integer(bv)):
+        return .Boolean(av < bv)
+    case let (.Floating(av), .Floating(bv)):
+        return .Boolean(av < bv)
+    case let (.Floating(av), .Integer(bv)):
+        return .Boolean(av < Double(bv))
+    case let (.Integer(av), .Floating(bv)):
+        return .Boolean(Double(av) < bv)
+    case let (.Str(av), .Str(bv)):
+        return .Boolean(av < bv)
+    default:
+        fatalError("invalid operands \(lhs), \(rhs) for >")
+    }
+}
+
+func &&(lhs: Value, rhs: Value) -> Value {
+    switch(lhs, rhs) {
+    case let (.Boolean(av), .Boolean(bv)):
+        return .Boolean(av && bv)
+    default:
+        fatalError("invalid operands \(lhs), \(rhs) for and")
+    }
+}
+
+func ||(lhs: Value, rhs: Value) -> Value {
+    switch(lhs, rhs) {
+    case let (.Boolean(av), .Boolean(bv)):
+        return .Boolean(av || bv)
+    default:
+        fatalError("invalid operands \(lhs), \(rhs) for or")
+    }
+}
+
+prefix func !(rhs: Value) -> Value {
+    switch(rhs) {
+    case let .Boolean(ev):
+        return .Boolean(!ev)
+    default:
+        fatalError("invalid operand \(rhs) for not")
+    }
+}
+
+func head(v: Value) -> Value {
+    switch(v) {
+    case let (.List(l)):
+        return head(l)
+    default:
+        fatalError("invalid operand \(v) for head")
+    }
+}
+
+func tail(v: Value) -> Value {
+    switch(v) {
+    case let (.List(l)):
+        return .List(tail(l))
+    default:
+        fatalError("invalid operand \(v) for tail")
+    }
+}
+
+func cons(h: Value, _ t: Value) -> Value {
+    switch(t) {
+    case let (.List(v)):
+        return .List(cons(h, v))
+    default:
+        fatalError("invalid 2nd operand \(t) for cons")
+    }
+}
