@@ -206,7 +206,7 @@ prefix func !(rhs: Value) -> Value {
 
 func head(v: Value) -> Value {
     switch(v) {
-    case let (.List(l)):
+    case let .List(l):
         return head(l)
     default:
         fatalError("invalid operand \(v) for head")
@@ -215,7 +215,7 @@ func head(v: Value) -> Value {
 
 func tail(v: Value) -> Value {
     switch(v) {
-    case let (.List(l)):
+    case let .List(l):
         return .List(tail(l))
     default:
         fatalError("invalid operand \(v) for tail")
@@ -224,7 +224,7 @@ func tail(v: Value) -> Value {
 
 func cons(h: Value, _ t: Value) -> Value {
     switch(t) {
-    case let (.List(v)):
+    case let .List(v):
         return .List(cons(h, v))
     default:
         fatalError("invalid 2nd operand \(t) for cons")
