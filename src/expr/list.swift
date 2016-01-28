@@ -7,8 +7,13 @@ public class List : Expr {
         self.e = e
     }
     
-    public override func eval(s: State) -> Value {
-        return Value.List(ListValue.fromArray(e.map{$0.eval(s)}))
+    public override func eval(s: State) -> AnyGenerator<Value> {
+        if e.isEmpty {
+            return generateOnce{Value.List(ListValue.Nil)}
+        }
+        return transformGenerator(generatorProduct(e.map{ei in ei.eval(s)})) {
+            x in Value.List(ListValue.fromArray(x))
+        }
     }
     
     override class func parse(ts: TokenStream) -> Expr? {

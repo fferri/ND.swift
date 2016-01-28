@@ -7,8 +7,10 @@ public class Not : Expr {
         self.e = e
     }
     
-    public override func eval(s: State) -> Value {
-        return !e.eval(s)
+    public override func eval(s: State) -> AnyGenerator<Value> {
+        return transformGenerator(e.eval(s)) {
+            x in !x
+        }
     }
 
     override class func parse(ts: TokenStream) -> Expr? {

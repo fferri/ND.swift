@@ -1,7 +1,7 @@
 import Foundation
 
 public class NAryOperator : Expr {
-    public override func eval(s: State) -> Value {
+    public override func eval(s: State) -> AnyGenerator<Value> {
         fatalError()
     }
     

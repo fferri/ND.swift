@@ -10,20 +10,20 @@ public class If : Program, CustomStringConvertible {
     }
     
     public override func trans(s: State) -> AnyGenerator<(Program, State)> {
-        if cond.eval(s).asBool {
-            let g = body.trans(s).generate()
-            return anyGenerator{
-                return g.next()
+        return chainGenerators(transformGenerator(cond.eval(s)) {
+            v in
+            if v.asBool {
+                return self.body.trans(s)
+            } else {
+                return generateOnce{
+                    return (Empty(), s)
+                }
             }
-        } else {
-            return generateOnce{
-                return (Empty(), s)
-            }
-        }
+        })
     }
     
     override public func final(s: State) -> Bool {
-        return !cond.eval(s).asBool || body.final(s)
+        return !any(cond.eval(s)) || body.final(s)
     }
     
     override class func parse(ts: TokenStream) -> Program? {

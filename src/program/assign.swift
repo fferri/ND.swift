@@ -10,9 +10,10 @@ public class Assign : Program, CustomStringConvertible {
     }
     
     public override func trans(s: State) -> AnyGenerator<(Program, State)> {
-        return generateOnce{
+        return transformGenerator(value.eval(s)) {
+            x in
             var s1 = s
-            s1[self.name] = self.value.eval(s)
+            s1[self.name] = x
             return (Empty(), s1)
         }
     }

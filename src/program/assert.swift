@@ -8,7 +8,7 @@ public class Assert : Program, CustomStringConvertible {
     }
     
     public override func trans(s: State) -> AnyGenerator<(Program, State)> {
-        if cond.eval(s).asBool {
+        if any(cond.eval(s)) {
             return generateOnce{
                 return (Empty(), s)
             }

@@ -10,15 +10,15 @@ public class FuncCall : Program, CustomStringConvertible {
     }
     
     public override func trans(s: State) -> AnyGenerator<(Program, State)> {
-        let funcCall = s.funcs[name]!
-        var s1 = s
-        for (argName, argExpr) in zip(funcCall.args, args) {
-            s1[argName] = argExpr.eval(s1)
-        }
-        let g = funcCall.body.trans(s1).generate()
-        return anyGenerator{
-            return g.next()
-        }
+        let funcCall = s.funcs[self.name]!
+        return chainGenerators(transformGenerator(generatorProduct(args.map{e in e.eval(s)})) {
+            x in
+            var s1 = s
+            for (argName, argExprVal) in zip(funcCall.args, x) {
+                s1[argName] = argExprVal
+            }
+            return funcCall.body.trans(s1)
+        })
     }
     
     override public func final(s: State) -> Bool {

@@ -9,8 +9,10 @@ public class Cons : Expr {
         self.t = t
     }
     
-    public override func eval(s: State) -> Value {
-        return cons(h.eval(s), t.eval(s))
+    public override func eval(s: State) -> AnyGenerator<Value> {
+        return generateTransformedProduct(h.eval(s), t.eval(s)) {
+            x, y in cons(x, y)
+        }
     }
     
     override class func parse(ts: TokenStream) -> Expr? {

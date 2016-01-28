@@ -1,7 +1,7 @@
 import Foundation
 
 public class Expr : CustomStringConvertible {
-    public func eval(s: State) -> Value {
+    public func eval(s: State) -> AnyGenerator<Value> {
         fatalError()
     }
     

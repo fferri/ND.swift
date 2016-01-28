@@ -10,24 +10,23 @@ public class While : Program, CustomStringConvertible {
     }
     
     public override func trans(s: State) -> AnyGenerator<(Program, State)> {
-        if cond.eval(s).asBool {
-            let g = body.trans(s).generate()
-            return anyGenerator{
-                if let (p1, s1) = g.next() {
+        return chainGenerators(transformGenerator(cond.eval(s)) {
+            v in
+            if v.asBool {
+                return transformGenerator(self.body.trans(s)) {
+                    (p1, s1) in
                     return (Sequence(p1, self), s1)
-                } else {
-                    return nil
+                }
+            } else {
+                return generateOnce{
+                    return (Empty(), s)
                 }
             }
-        } else {
-            return generateOnce{
-                return (Empty(), s)
-            }
-        }
+        })
     }
     
     public override func final(s: State) -> Bool {
-        return !cond.eval(s).asBool || body.final(s)
+        return !any(cond.eval(s)) || body.final(s)
     }
     
     override class func parse(ts: TokenStream) -> Program? {

@@ -8,8 +8,10 @@ public class Mul : Expr {
         self.b = b
     }
     
-    public override func eval(s: State) -> Value {
-        return a.eval(s) * b.eval(s)
+    public override func eval(s: State) -> AnyGenerator<Value> {
+        return generateTransformedProduct(a.eval(s), b.eval(s)) {
+            x, y in x * y
+        }
     }
 
     override class func parse(ts: TokenStream) -> Expr? {

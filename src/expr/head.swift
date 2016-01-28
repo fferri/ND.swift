@@ -7,8 +7,10 @@ public class Head : Expr {
         self.l = l
     }
     
-    public override func eval(s: State) -> Value {
-        return head(l.eval(s))
+    public override func eval(s: State) -> AnyGenerator<Value> {
+        return transformGenerator(l.eval(s)) {
+            x in head(x)
+        }
     }
     
     override class func parse(ts: TokenStream) -> Expr? {

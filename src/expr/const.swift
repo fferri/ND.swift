@@ -7,8 +7,10 @@ public class Const : Expr {
         value = v
     }
     
-    public override func eval(s: State) -> Value {
-        return value
+    public override func eval(s: State) -> AnyGenerator<Value> {
+        return generateOnce{
+            return self.value
+        }
     }
     
     override class func parse(ts: TokenStream) -> Expr? {

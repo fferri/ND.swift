@@ -8,9 +8,9 @@ public class Var : Expr {
         super.init()
     }
     
-    public override func eval(s: State) -> Value {
+    public override func eval(s: State) -> AnyGenerator<Value> {
         if let v = s[name] {
-            return v
+            return generateOnce{v}
         } else {
             fatalError("no such variable: \(name)")
         }

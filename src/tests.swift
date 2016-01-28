@@ -32,6 +32,10 @@ func runTest(p: String) {
 func runTests() {
     runTokenizerTest("(set  x 1)\n(set y 2)", [[1,1],[1,2],[1,7],[1,9],[1,10],[2,1],[2,2],[2,6],[2,8],[2,9]])
 
+    runTest("(set x ())") {
+        $0["x"]!.asList == ListValue.Nil
+    }
+    
     //runTest("((def printDouble (x) ((set y (* 2 x)) (print y))) (printDouble 2))")
     
     runTest("(set x 1)") {
@@ -109,6 +113,10 @@ func runTests() {
     
     runTest("((set x ((+ 1 1) (* 2 3) (/ 6 2))) (set y (head (tail x))))") {
         $0["y"]?.asInt == 6
+    }
+    
+    runTest("(set x (cons 1 ()))") {
+        $0["x"]!.asList == ListValue.fromArray([Value.Integer(1)])
     }
     
     runTest("(assert (= () (tail (tail (1 2)))))")

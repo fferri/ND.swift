@@ -10,16 +10,11 @@ public class Domain : Program, CustomStringConvertible {
     }
     
     public override func trans(s: State) -> AnyGenerator<(Program, State)> {
-        var i = 0
-        return anyGenerator{
+        return transformGenerator(chainGenerators(values.map{$0.eval(s)})) {
+            x in
             var s1 = s
-            if i < self.values.count {
-                s1[self.name] = self.values[i].eval(s)
-                i += 1
-                return (Empty(), s1)
-            } else {
-                return nil
-            }
+            s1[self.name] = x
+            return (Empty(), s1)
         }
     }
     
