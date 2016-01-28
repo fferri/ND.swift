@@ -230,3 +230,15 @@ func cons(h: Value, _ t: Value) -> Value {
         fatalError("invalid 2nd operand \(t) for cons")
     }
 }
+
+func any(g: AnyGenerator<Value>) -> Bool {
+    return any(g) {
+        x in x.asBool
+    }
+}
+
+func all(g: AnyGenerator<Value>) -> Bool {
+    return all(g) {
+        x in x.asBool
+    }
+}
