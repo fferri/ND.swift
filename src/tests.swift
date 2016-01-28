@@ -123,5 +123,17 @@ func runTests() {
     
     runTest("(assert (= (1 2 3) (cons 1 (cons 2 (cons 3 ())))))")
     
+    runTest("(set x (len ()))") {
+        $0["x"]?.asInt == 0
+    }
+
+    runTest("(set x (len (44)))") {
+        $0["x"]?.asInt == 1
+    }
+    
+    runTest("(set x (len (44 55 66)))") {
+        $0["x"]?.asInt == 3
+    }
+    
     print("all tests passed successfully")
 }

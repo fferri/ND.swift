@@ -231,6 +231,15 @@ func cons(h: Value, _ t: Value) -> Value {
     }
 }
 
+func len(v: Value) -> Value {
+    switch(v) {
+    case let .List(l):
+        return .Integer(len(l))
+    default:
+        fatalError("invalid operand \(v) for len")
+    }
+}
+
 func any(g: AnyGenerator<Value>) -> Bool {
     return any(g) {
         x in x.asBool

@@ -46,3 +46,10 @@ func tail(l: ListValue) -> ListValue {
 func cons(h: Value, _ t: ListValue) -> ListValue {
     return .Node(h, t)
 }
+
+func len(l: ListValue) -> Int {
+    switch(l) {
+    case .Nil: return 0
+    case let .Node(_, t): return 1 + len(t)
+    }
+}

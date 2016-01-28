@@ -21,6 +21,7 @@ public class Expr : CustomStringConvertible {
         if let x = Head.parse(ts) {return x}
         if let x = Tail.parse(ts) {return x}
         if let x = Cons.parse(ts) {return x}
+        if let x = Len.parse(ts) {return x}
         if let x = List.parse(ts) {return x} // must try this as last
         return nil
     }
