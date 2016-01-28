@@ -17,7 +17,7 @@ func runTest(s0: State, _ program: String, test: (State -> Bool)) {
         fatalError("program has no valid runs: \(p)")
     }
     if !test(s) {
-        fatalError("test failed for \(p)")
+        fatalError("test failed for \(p), s=\(s)")
     }
 }
 
@@ -133,6 +133,18 @@ func runTests() {
     
     runTest("(set x (len (44 55 66)))") {
         $0["x"]?.asInt == 3
+    }
+    
+    runTest("((set x (choose 1 2 3 4)) (set y (choose 7 4 1)) (assert (= 12 (* x y))))") {
+        $0["x"]?.asInt == 3 && $0["y"]?.asInt == 4
+    }
+    
+    runTest("((set x (1 2 3)) (set y (head (tail (tail x)))))") {
+        $0["y"]?.asInt == 3
+    }
+    
+    runTest("((set l ()) (repeat ((assert (< (len l) 4)) (set l (cons (choose 0 1) l)))) (assert (= (len l) 4)) (set z (+ (head l) (head (tail l)) (head (tail (tail l))) (head (tail (tail (tail l)))))) (assert (= z 2)) (assert (= (head l) 0)))") {
+        $0["l"]!.asList.toArray.map{x in x.asInt} == [0, 1, 1, 0]
     }
     
     print("all tests passed successfully")
