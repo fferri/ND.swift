@@ -144,7 +144,9 @@ func runTests() {
     }
     
     runTest("((set l ()) (repeat ((assert (< (len l) 4)) (set l (cons (choose 0 1) l)))) (assert (= (len l) 4)) (set z (+ (head l) (head (tail l)) (head (tail (tail l))) (head (tail (tail (tail l)))))) (assert (= z 2)) (assert (= (head l) 0)))") {
-        $0["l"]!.asList.toArray.map{x in x.asInt} == [0, 1, 1, 0]
+        s in
+        let l = s["l"]!.asList.toArray.map{x in x.asInt}
+        return l == [0, 1, 1, 0] || l == [0, 1, 0, 1] || l == [0, 0, 1, 1]
     }
     
     print("all tests passed successfully")
